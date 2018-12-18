@@ -1,2 +1,2 @@
-include ':library'
+include ':widget-app'
 rootProject.name = 'widget-android'
