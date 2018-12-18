@@ -27,6 +27,50 @@
       });
 
       window.widget = urlParamsObj;
+
+
+      var scriptPath = '/static/js/bundle.js';
+      var src = 'https://widget-sdk.cere.io' + scriptPath;
+
+      if (window.widget.env === 'local') {
+        src = 'http://' + window.location.hostname + ':3011' + scriptPath;
+      } else {
+        if (window.widget.env !== 'production') {
+          src = 'https://widget-sdk.' + window.widget.env + '.cere.io' + scriptPath;
+        }
+      }
+
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = src;
+
+      document.getElementsByTagName('head')[0].append(script);
+
+      var t = setInterval(function() {
+        if (window.CRBWidget) {
+          clearInterval(t);
+
+          window.CRBWidget.init({
+            uid: window.widget.userId,
+            appId: window.widget.appId,
+            env: window.widget.env,
+            sections: window.widget.sections.split(','),
+
+            processNonFungibleReward: function(params) {
+              console.log('Not implemented');
+            },
+
+            setStorageItem: function(key, value) {
+              return window.NativeStorage.setItem(key, value);
+            },
+
+            getStorageItem: function(key) {
+              return window.NativeStorage.getItem(key);
+            }
+          });
+        }
+      }, 500);
+
     </script>
 </head>
 <body>
