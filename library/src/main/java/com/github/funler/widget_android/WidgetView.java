@@ -1,4 +1,4 @@
-package funler.com.widget_android;
+package com.github.funler.widget_android;
 
 import android.content.Context;
 
