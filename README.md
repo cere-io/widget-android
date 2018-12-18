@@ -1,1 +1,1 @@
-h1. Rewards Widget SDK for Android
+## Rewards Widget SDK for Android
