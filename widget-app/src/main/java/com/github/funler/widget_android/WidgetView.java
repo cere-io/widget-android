@@ -2,10 +2,13 @@ package com.github.funler.widget_android;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
 public class WidgetView extends BridgeWebView {
+
+    private static String TAG = "WidgetView";
 
     private WidgetMode mode = WidgetMode.PRODUCTION;
     private String appId = "";
@@ -47,7 +50,9 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView load() {
-        this.loadUrl(generateUrl());
+        String url = generateUrl();
+        Log.d(TAG, "Load url: " + url);
+        this.loadUrl(url);
         return this;
     }
 
@@ -58,7 +63,7 @@ public class WidgetView extends BridgeWebView {
         }
         String sections = stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
 
-        return new StringBuilder("/assets/index.html?")
+        return new StringBuilder("file:///android_asset/index.html?")
                 .append("env=").append(this.mode.name().toLowerCase())
                 .append("&appId=").append(this.appId)
                 .append("&userId=").append(this.userId)
