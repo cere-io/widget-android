@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#000000">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width shrink-to-fit=no">
+
+    <style>
+        html, body, #root {
+            min-height: 100% !important;
+            height: 100%;
+            width: 100%
+        }
+    </style>
+
+    <script>
+      var queryString = window.location.href.split('?')[1];
+
+      var parts = queryString.split('&');
+      var urlParamsObj = {};
+
+      parts.forEach(function(val, i) {
+        var param = val.split('=');
+        urlParamsObj[param[0]] = param[1];
+      });
+
+      window.widget = urlParamsObj;
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>
