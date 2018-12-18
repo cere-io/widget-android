@@ -1,6 +1,7 @@
 package com.github.funler.widget_android;
 
 import android.content.Context;
+import android.util.AttributeSet;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
@@ -20,6 +21,14 @@ public class WidgetView extends BridgeWebView {
         this.appId = appId;
         this.userId = userId;
         this.sections = sections;
+    }
+
+    public WidgetView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public WidgetView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
     public WidgetView setAppId(String appId) {
