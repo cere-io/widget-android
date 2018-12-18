@@ -50,13 +50,21 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView load() {
-        String url = generateUrl();
+        String url = generateUrl(null);
         Log.d(TAG, "Load url: " + url);
         this.loadUrl(url);
         return this;
     }
 
-    private String generateUrl() {
+    private WidgetView load(WidgetMode mode, String widgetUrl) {
+        this.mode = mode;
+        String url = generateUrl(widgetUrl);
+        Log.d(TAG, "Load url: " + url);
+        this.loadUrl(url);
+        return this;
+    }
+
+    private String generateUrl(String widgetUrl) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String section : this.sections) {
             stringBuilder.append(section).append(",");
@@ -68,6 +76,7 @@ public class WidgetView extends BridgeWebView {
                 .append("&appId=").append(this.appId)
                 .append("&userId=").append(this.userId)
                 .append("&sections=").append(sections)
+                .append(widgetUrl == null ? "" : "&widgetUrl=" + widgetUrl)
                 .toString();
     }
 

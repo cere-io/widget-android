@@ -32,8 +32,8 @@
       var scriptPath = '/static/js/bundle.js';
       var src = 'https://widget-sdk.cere.io' + scriptPath;
 
-      if (window.widget.env === 'local') {
-        src = 'http://' + window.location.hostname + ':3011' + scriptPath;
+      if (window.widget.env === 'local' && window.widget.widgetUrl) {
+        src = 'http://' + window.widget.widgetUrl + ':3011' + scriptPath;
       } else {
         if (window.widget.env !== 'production') {
           src = 'https://widget-sdk.' + window.widget.env + '.cere.io' + scriptPath;
