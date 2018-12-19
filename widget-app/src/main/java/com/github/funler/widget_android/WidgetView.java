@@ -77,11 +77,11 @@ public class WidgetView extends BridgeWebView {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line
-                        .replaceAll("\\$\\{widgetUrl}", widgetUrl)
-                        .replaceAll("\\$\\{userId}", this.userId)
-                        .replaceAll("\\$\\{appId}", this.appId)
-                        .replaceAll("\\$\\{env}", this.mode.name().toLowerCase())
-                        .replaceAll("\\$\\{sections}", getSectionsStr());
+                        .replaceAll("::widgetUrl::", widgetUrl)
+                        .replaceAll("::userId::", this.userId)
+                        .replaceAll("::appId::", this.appId)
+                        .replaceAll("::env::", this.mode.name().toLowerCase())
+                        .replaceAll("::sections::", getSectionsStr());
 
                 stringBuilder.append(line);
             }
