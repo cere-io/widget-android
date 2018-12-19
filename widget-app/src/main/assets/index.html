@@ -45,8 +45,11 @@
       script.src = src;
 
       document.getElementsByTagName('head')[0].append(script);
-
-      var t = setInterval(function() {
+    </script>
+</head>
+<body>
+    <script type="text/javascript">
+        var t = setInterval(function() {
         if (window.CRBWidget) {
           clearInterval(t);
 
@@ -70,10 +73,6 @@
           });
         }
       }, 500);
-
     </script>
-</head>
-<body>
-    <div id="root"></div>
 </body>
 </html>
