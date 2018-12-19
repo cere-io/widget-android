@@ -55,7 +55,7 @@
         console.log('Init Widget SDK');
 
         var t = setInterval(function() {
-        if (window.CRBWidget) {
+        if (window.CRBWidget && window.NativeStorage) {
           clearInterval(t);
 
           window.CRBWidget.init({
@@ -76,8 +76,10 @@
               return window.NativeStorage.getItem(key);
             }
           });
+        } else {
+          console.log('Waiting for initialization);
         }
-      }, 500);
+      }, 1000);
     </script>
 </body>
 </html>
