@@ -49,6 +49,11 @@
 </head>
 <body>
     <script type="text/javascript">
+
+        console.log('Check JS Bridge', window.WebViewJavascriptBridgeReady);
+        console.log('Check NativeStorage', window.NativeStorage);
+        console.log('Init Widget SDK');
+
         var t = setInterval(function() {
         if (window.CRBWidget) {
           clearInterval(t);
