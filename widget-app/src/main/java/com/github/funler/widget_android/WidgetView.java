@@ -63,9 +63,10 @@ public class WidgetView extends BridgeWebView {
 
     private WidgetView load(WidgetMode mode, String widgetUrl) {
         this.mode = mode;
-        String html = generateHTML(widgetUrl);
+        String jsPostfix = "/static/js/bundle.js";
+        String html = generateHTML(widgetUrl + jsPostfix);
         Log.d(TAG, "Load HTML:\n" + html);
-        this.loadDataWithBaseURL("file:///android_asset", html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(widgetUrl, html, "text/html", "UTF-8", null);
         return this;
     }
 
