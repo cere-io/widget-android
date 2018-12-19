@@ -15,19 +15,42 @@
         }
     </style>
 
-    <script type="text/javascript" src="${widgetUrl}"></script>
+    <script>
+      var queryString = window.location.href.split('?')[1];
+
+      var parts = queryString.split('&');
+      var urlParamsObj = {};
+
+      parts.forEach(function(val, i) {
+        var param = val.split('=');
+        urlParamsObj[param[0]] = param[1];
+      });
+
+      window.widget = urlParamsObj;
+
+
+      var scriptPath = '/static/js/bundle.js';
+      var src = 'https://widget-sdk.cere.io' + scriptPath;
+
+      if (window.widget.env === 'local' && window.widget.widgetUrl) {
+        src = 'http://' + window.widget.widgetUrl + ':3011' + scriptPath;
+      } else {
+        if (window.widget.env !== 'production') {
+          src = 'https://widget-sdk.' + window.widget.env + '.cere.io' + scriptPath;
+        }
+      }
+
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = src;
+
+      document.getElementsByTagName('head')[0].append(script);
+    </script>
 </head>
 <body>
     <script type="text/javascript">
 
         console.log('Init Widget SDK');
-
-        window.widget = {
-          userId: '${userId}',
-          appId: '${appId}',
-          env: '${env}',
-          sections: '${sections}'.split(',')
-        };
 
         var t = setInterval(function() {
         if (window.CRBWidget && window.NativeStorage) {
@@ -40,7 +63,7 @@
             uid: window.widget.userId,
             appId: window.widget.appId,
             env: window.widget.env,
-            sections: sections,
+            sections: window.widget.sections.split(','),
 
             processNonFungibleReward: function(params) {
               console.log('Not implemented');
@@ -57,7 +80,7 @@
         } else {
           console.log('Waiting for initialization');
         }
-      }, 1000);
+      }, 250);
     </script>
 </body>
 </html>
