@@ -33,14 +33,14 @@
         if (window.CRBWidget && window.NativeStorage) {
           clearInterval(t);
 
-          console.log('Check JS Bridge', window.WebViewJavascriptBridgeReady);
+          console.log('Check JS Bridge', window.WebViewJavascriptBridge);
           console.log('Check NativeStorage', window.NativeStorage);
 
           window.CRBWidget.init({
             uid: window.widget.userId,
             appId: window.widget.appId,
             env: window.widget.env,
-            sections: sections,
+            sections: window.widget.sections,
 
             processNonFungibleReward: function(params) {
               console.log('Not implemented');
