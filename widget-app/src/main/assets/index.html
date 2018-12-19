@@ -49,11 +49,19 @@
             },
 
             setStorageItem: function(key, value) {
-              return nativeStorage.setItem(key, value);
+              return nativeStorage.setItem(key, value)
+                .then(function(data) {
+                   console.log('setStorageItem', data);
+                   return data;
+                });
             },
 
             getStorageItem: function(key) {
-              return nativeStorage.getItem(key);
+              return nativeStorage.getItem(key)
+                .then(function(data) {
+                   console.log('getStorageItem', data);
+                   return data;
+                });
             }
           });
         } else {
