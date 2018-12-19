@@ -34,7 +34,9 @@
           clearInterval(t);
 
           console.log('Check JS Bridge', window.WebViewJavascriptBridge);
-          console.log('Check NativeStorage', window.NativeStorage);
+
+          var nativeStorage = window.NativeStorage;
+          console.log('Check NativeStorage', nativeStorage);
 
           window.CRBWidget.init({
             uid: window.widget.userId,
@@ -47,11 +49,11 @@
             },
 
             setStorageItem: function(key, value) {
-              return window.NativeStorage.setItem(key, value);
+              return nativeStorage.setItem(key, value);
             },
 
             getStorageItem: function(key) {
-              return window.NativeStorage.getItem(key);
+              return nativeStorage.getItem(key);
             }
           });
         } else {

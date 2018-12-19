@@ -54,18 +54,20 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView load() {
-        return load(WidgetMode.PRODUCTION, WidgetMode.PRODUCTION.url());
+        return load(WidgetMode.PRODUCTION, WidgetMode.PRODUCTION.sdkURL(), WidgetMode.PRODUCTION.widgetURL());
     }
 
     private WidgetView load(WidgetMode mode) {
-        return load(mode, mode.url());
+        return load(mode, mode.sdkURL(), mode.widgetURL());
     }
 
-    private WidgetView load(WidgetMode mode, String widgetUrl) {
+    private WidgetView load(WidgetMode mode, String sdkUrl, String widgetUrl) {
         this.mode = mode;
         String jsPostfix = "/static/js/bundle.js";
-        String html = generateHTML(widgetUrl + jsPostfix);
+
+        String html = generateHTML(sdkUrl + jsPostfix);
         Log.d(TAG, "Load HTML:\n" + html);
+
         this.loadDataWithBaseURL(widgetUrl, html, "text/html", "UTF-8", null);
         return this;
     }
