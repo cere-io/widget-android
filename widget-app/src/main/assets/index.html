@@ -50,13 +50,14 @@
 <body>
     <script type="text/javascript">
 
-        console.log('Check JS Bridge', window.WebViewJavascriptBridgeReady);
-        console.log('Check NativeStorage', window.NativeStorage);
         console.log('Init Widget SDK');
 
         var t = setInterval(function() {
-        if (window.CRBWidget && window.NativeStorage) {
+        if (window.CRBWidget && window.WebViewJavascriptBridgeReady && window.NativeStorage) {
           clearInterval(t);
+
+          console.log('Check JS Bridge', window.WebViewJavascriptBridgeReady);
+          console.log('Check NativeStorage', window.NativeStorage);
 
           window.CRBWidget.init({
             uid: window.widget.userId,
