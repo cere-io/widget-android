@@ -51,7 +51,7 @@
             setStorageItem: function(key, value) {
               return nativeStorage.setItem(key, value)
                 .then(function(data) {
-                   console.log('setStorageItem', data);
+                   console.log('WidgetAndroidSDK::setStorageItem result', data);
                    return data;
                 });
             },
@@ -59,7 +59,7 @@
             getStorageItem: function(key) {
               return nativeStorage.getItem(key)
                 .then(function(data) {
-                   console.log('getStorageItem', data);
+                   console.log('WidgetAndroidSDK::getStorageItem result', data);
                    return data;
                 });
             }
