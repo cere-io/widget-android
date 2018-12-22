@@ -51,32 +51,36 @@
             setStorageItem: function(key, value) {
               return nativeStorage.setItem(key, value)
                 .then(function(data) {
-                   console.log('WidgetAndroidSDK::setStorageItem result', data);
+                   var res = null;
+
                    if (data) {
                      try {
-                       return JSON.parse(data);
+                       res = JSON.parse(data);
                      } catch (e) {
-                       return data;
+                       res = data;
                      }
                    }
 
-                   return data;
+                   console.log('WidgetAndroidSDK::setStorageItem result', res);
+                   return res;
                 });
             },
 
             getStorageItem: function(key) {
               return nativeStorage.getItem(key)
                 .then(function(data) {
-                   console.log('WidgetAndroidSDK::getStorageItem result', data);
+                   var res = null;
+
                    if (data) {
                      try {
-                       return JSON.parse(data);
+                       res = JSON.parse(data);
                      } catch (e) {
-                       return data;
+                       res = data;
                      }
                    }
 
-                   return data;
+                   console.log('WidgetAndroidSDK::getStorageItem result', res);
+                   return res;
                 });
             }
           });
