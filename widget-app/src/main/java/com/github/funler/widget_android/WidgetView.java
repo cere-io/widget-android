@@ -1,8 +1,10 @@
 package com.github.funler.widget_android;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
@@ -62,6 +64,9 @@ public class WidgetView extends BridgeWebView {
     }
 
     private WidgetView load(WidgetMode mode, String sdkUrl, String widgetUrl) {
+        this.setBackgroundColor(Color.TRANSPARENT);
+        this.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+
         this.mode = mode;
         String jsPostfix = "/static/js/bundle.js";
 

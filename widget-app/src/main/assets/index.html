@@ -52,6 +52,14 @@
               return nativeStorage.setItem(key, value)
                 .then(function(data) {
                    console.log('WidgetAndroidSDK::setStorageItem result', data);
+                   if (data) {
+                     try {
+                       return JSON.parse(data);
+                     } catch (e) {
+                       return data;
+                     }
+                   }
+
                    return data;
                 });
             },
@@ -60,6 +68,14 @@
               return nativeStorage.getItem(key)
                 .then(function(data) {
                    console.log('WidgetAndroidSDK::getStorageItem result', data);
+                   if (data) {
+                     try {
+                       return JSON.parse(data);
+                     } catch (e) {
+                       return data;
+                     }
+                   }
+
                    return data;
                 });
             }
