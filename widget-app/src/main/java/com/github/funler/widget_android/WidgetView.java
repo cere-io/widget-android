@@ -15,11 +15,15 @@ import java.io.InputStreamReader;
 public class WidgetView extends BridgeWebView {
 
     private static String TAG = "WidgetView";
+    private static WidgetView INSTANCE;
 
     private WidgetMode mode = WidgetMode.PRODUCTION;
     private String appId = "";
     private String userId = "";
     private String[] sections = {};
+
+    private String sdkUrl;
+    private String widgetUrl;
 
     public WidgetView(Context context) {
         super(context);
@@ -59,14 +63,30 @@ public class WidgetView extends BridgeWebView {
         return load(WidgetMode.PRODUCTION, WidgetMode.PRODUCTION.sdkURL(), WidgetMode.PRODUCTION.widgetURL());
     }
 
+    protected WidgetView reloadWidgetView() {
+        return load(this.mode, this.sdkUrl, this.widgetUrl);
+    }
+
+    protected static WidgetView getInstance() {
+        return INSTANCE;
+    }
+
     private WidgetView load(WidgetMode mode) {
         return load(mode, mode.sdkURL(), mode.widgetURL());
     }
 
     private WidgetView load(WidgetMode mode, String sdkUrl, String widgetUrl) {
+        INSTANCE = this;
+
+        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
+            this.registerHandler(handler.name(), handler.handler());
+        }
+
         this.setBackgroundColor(Color.TRANSPARENT);
         this.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
+        this.sdkUrl = sdkUrl;
+        this.widgetUrl = widgetUrl;
         this.mode = mode;
         String jsPostfix = "/static/js/bundle.js";
 
@@ -98,16 +118,6 @@ public class WidgetView extends BridgeWebView {
         }
 
         return stringBuilder.toString();
-    }
-
-    private String generateUrl(String widgetUrl) {
-        return new StringBuilder("file:///android_asset/index.html?")
-                .append("env=").append(this.mode.name().toLowerCase())
-                .append("&appId=").append(this.appId)
-                .append("&userId=").append(this.userId)
-                .append("&sections=").append(getSectionsStr())
-                .append(widgetUrl == null ? "" : "&widgetUrl=" + widgetUrl)
-                .toString();
     }
 
     private String getSectionsStr() {
