@@ -25,6 +25,9 @@ public class WidgetView extends BridgeWebView {
     private String sdkUrl;
     private String widgetUrl;
 
+    private int defaultWidth = 0;
+    private int defaultHeight = 0;
+
     public WidgetView(Context context) {
         super(context);
     }
@@ -136,5 +139,21 @@ public class WidgetView extends BridgeWebView {
         this.mode = mode;
         load();
         return this;
+    }
+
+    public int getDefaultWidth() {
+        return defaultWidth;
+    }
+
+    public void setDefaultWidth(int defaultWidth) {
+        this.defaultWidth = defaultWidth;
+    }
+
+    public int getDefaultHeight() {
+        return defaultHeight;
+    }
+
+    public void setDefaultHeight(int defaultHeight) {
+        this.defaultHeight = defaultHeight;
     }
 }
