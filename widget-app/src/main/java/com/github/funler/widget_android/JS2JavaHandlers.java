@@ -44,9 +44,14 @@ public enum JS2JavaHandlers {
         int width = widget.getDefaultWidth();
         int height = widget.getDefaultHeight();
 
-        Log.d(getTag(), "expand to width: " + width + ", height: " + height);
+        if (width != 0 || height != 0) {
+            Log.d(getTag(), "expand to width: " + width + ", height: " + height);
+            widget.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+        } else {
+            widget.setDefaultWidth(width);
+            widget.setDefaultHeight(height);
+        }
 
-        widget.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
         function.onCallBack(null);
     });
 
