@@ -2,7 +2,7 @@ package com.github.funler.widget_android;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -30,7 +30,7 @@ public enum JS2JavaHandlers {
                     widget.setDefaultWidth(widget.getWidth());
                     widget.setDefaultHeight(widget.getHeight());
                 }
-                widget.setLayoutParams(new LinearLayout.LayoutParams(newWidth, newHeight));
+                widget.setLayoutParams(new RelativeLayout.LayoutParams(newWidth, newHeight));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public enum JS2JavaHandlers {
 
         Log.d(getTag(), "expand to width: " + width + ", height: " + height);
 
-        widget.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+        widget.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
         function.onCallBack(null);
     });
 
