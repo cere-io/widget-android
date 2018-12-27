@@ -16,7 +16,7 @@ allprojects {
 }
 ```        
 
-In `build.gradle` file for your **app** add new dependency into `dependencies` block:
+In `build.gradle` file for your **module** add new dependency into `dependencies` block:
 
 ```gradle
 dependencies {
