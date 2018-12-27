@@ -30,7 +30,12 @@ public enum JS2JavaHandlers {
                     widget.setDefaultWidth(widget.getWidth());
                     widget.setDefaultHeight(widget.getHeight());
                 }
-                widget.setLayoutParams(new RelativeLayout.LayoutParams(newWidth, newHeight));
+
+                float scale = context.getResources().getDisplayMetrics().density;
+                int widthPx = (int) (newWidth * scale + 0.5f);
+                int heightPx = (int) (newHeight * scale + 0.5f);
+
+                widget.setLayoutParams(new RelativeLayout.LayoutParams(widthPx, heightPx));
             }
         } catch (JSONException e) {
             e.printStackTrace();
