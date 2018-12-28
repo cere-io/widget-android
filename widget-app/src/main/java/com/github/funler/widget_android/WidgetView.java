@@ -30,7 +30,6 @@ public class WidgetView extends BridgeWebView {
 
     public WidgetView(Context context) {
         super(context);
-        this.measure();
     }
 
     public WidgetView(Context context, String appId, String userId, String[] sections) {
@@ -38,17 +37,14 @@ public class WidgetView extends BridgeWebView {
         this.appId = appId;
         this.userId = userId;
         this.sections = sections;
-        this.measure();
     }
 
     public WidgetView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.measure();
     }
 
     public WidgetView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.measure();
     }
 
     public WidgetView setAppId(String appId) {
@@ -101,6 +97,8 @@ public class WidgetView extends BridgeWebView {
         Log.d(TAG, "Load HTML:\n" + html);
 
         this.loadDataWithBaseURL(widgetUrl, html, "text/html", "UTF-8", null);
+        this.measure();
+
         return this;
     }
 
