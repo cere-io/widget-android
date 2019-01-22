@@ -26,6 +26,7 @@
           userId: '::userId::',
           appId: '::appId::',
           env: '::env::',
+          mode: '::mode::',
           sections: '::sections::'.split(',')
         };
 
@@ -42,6 +43,7 @@
             uid: window.widget.userId,
             appId: window.widget.appId,
             env: window.widget.env,
+            mode: window.widget.mode,
             sections: window.widget.sections,
 
             processNonFungibleReward: function(params) {

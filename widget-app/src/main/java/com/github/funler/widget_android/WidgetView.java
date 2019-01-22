@@ -7,17 +7,26 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.github.funler.jsbridge.BridgeWebView;
+import com.github.funler.jsbridge.CallBackFunction;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class WidgetView extends BridgeWebView {
 
     private static String TAG = "WidgetView";
     private static WidgetView INSTANCE;
 
-    private WidgetMode mode = WidgetMode.PRODUCTION;
+    private WidgetEnv env = WidgetEnv.PRODUCTION;
+    private WidgetMode mode = WidgetMode.REWARDS;
     private String appId = "";
     private String userId = "";
     private String[] sections = {};
@@ -62,23 +71,101 @@ public class WidgetView extends BridgeWebView {
         return this;
     }
 
+    public WidgetView setMode(WidgetMode mode) {
+        this.mode = mode;
+        return this;
+    }
+
+    public WidgetView onSignUp(OnSignUpHandler handler) {
+        this.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
+            try {
+                JSONObject jsonObject = new JSONObject(data);
+                handler.handle(
+                        jsonObject.getString("email"),
+                        jsonObject.getString("token"),
+                        prepareExtras(jsonObject)
+                );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                function.onCallBack(null);
+            }
+        });
+        return this;
+    }
+
+    public WidgetView onSignIn(OnSignInHandler handler) {
+        this.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
+            try {
+                JSONObject jsonObject = new JSONObject(data);
+                handler.handle(
+                        jsonObject.getString("email"),
+                        jsonObject.getString("token"),
+                        prepareExtras(jsonObject)
+                );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                function.onCallBack(null);
+            }
+        });
+        return this;
+    }
+
+    private Map<String, String> prepareExtras(JSONObject jsonObject) throws JSONException {
+        Map<String, String> extras = Collections.EMPTY_MAP;
+
+        if (jsonObject.has("extras")) {
+            JSONObject extrasJson = jsonObject.getJSONObject("extras");
+            extras = new HashMap<>();
+
+            Iterator<String> iterator = extrasJson.keys();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                extras.put(key, extrasJson.getString(key));
+            }
+        }
+
+        return extras;
+    }
+
+    public WidgetView onGetUserEmailById() {
+        return this;
+    }
+
+    public WidgetView show() {
+        return this;
+    }
+
+    public WidgetView hide() {
+        return this;
+    }
+
+    public WidgetView collapse() {
+        return this;
+    }
+
+    public WidgetView expand() {
+        return this;
+    }
+
     public WidgetView load() {
-        return load(WidgetMode.PRODUCTION, WidgetMode.PRODUCTION.sdkURL(), WidgetMode.PRODUCTION.widgetURL());
+        return load(WidgetEnv.PRODUCTION, WidgetEnv.PRODUCTION.sdkURL(), WidgetEnv.PRODUCTION.widgetURL());
     }
 
     protected WidgetView reloadWidgetView() {
-        return load(this.mode, this.sdkUrl, this.widgetUrl);
+        return load(this.env, this.sdkUrl, this.widgetUrl);
     }
 
     protected static WidgetView getInstance() {
         return INSTANCE;
     }
 
-    private WidgetView load(WidgetMode mode) {
-        return load(mode, mode.sdkURL(), mode.widgetURL());
+    private WidgetView load(WidgetEnv env) {
+        return load(env, env.sdkURL(), env.widgetURL());
     }
 
-    private WidgetView load(WidgetMode mode, String sdkUrl, String widgetUrl) {
+    private WidgetView load(WidgetEnv env, String sdkUrl, String widgetUrl) {
         INSTANCE = this;
 
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
@@ -90,7 +177,7 @@ public class WidgetView extends BridgeWebView {
 
         this.sdkUrl = sdkUrl;
         this.widgetUrl = widgetUrl;
-        this.mode = mode;
+        this.env = env;
         String jsPostfix = "/static/js/bundle.js";
 
         String html = generateHTML(sdkUrl + jsPostfix);
@@ -113,8 +200,9 @@ public class WidgetView extends BridgeWebView {
                         .replaceAll("::widgetUrl::", widgetUrl)
                         .replaceAll("::userId::", this.userId)
                         .replaceAll("::appId::", this.appId)
-                        .replaceAll("::env::", this.mode.name().toLowerCase())
-                        .replaceAll("::sections::", getSectionsStr());
+                        .replaceAll("::env::", this.env.name().toLowerCase())
+                        .replaceAll("::sections::", getSectionsStr())
+                        .replaceAll("::mode::", this.mode.name());
 
                 stringBuilder.append(line);
             }
@@ -134,11 +222,11 @@ public class WidgetView extends BridgeWebView {
     }
 
     private boolean isProduction() {
-        return this.mode == WidgetMode.PRODUCTION;
+        return this.env == WidgetEnv.PRODUCTION;
     }
 
-    private WidgetView setMode(WidgetMode mode) {
-        this.mode = mode;
+    private WidgetView setEnv(WidgetEnv env) {
+        this.env = env;
         load();
         return this;
     }
@@ -170,5 +258,13 @@ public class WidgetView extends BridgeWebView {
         this.getLayoutParams().width = width;
         this.getLayoutParams().height = height;
         this.requestLayout();
+    }
+
+    public interface OnSignInHandler {
+        void handle(String email, String token, Map<String, String> extras);
+    }
+
+    public interface OnSignUpHandler {
+        void handle(String email, String token, Map<String, String> extras);
     }
 }
