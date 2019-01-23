@@ -202,7 +202,7 @@ public class WidgetView extends BridgeWebView {
                         .replaceAll("::appId::", this.appId)
                         .replaceAll("::env::", this.env.name().toLowerCase())
                         .replaceAll("::sections::", getSectionsStr())
-                        .replaceAll("::mode::", this.mode.name());
+                        .replaceAll("::mode::", this.mode.name().toLowerCase());
 
                 stringBuilder.append(line);
             }
