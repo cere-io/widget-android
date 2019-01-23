@@ -15,13 +15,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="::widgetUrl::"></script>
-</head>
-<body>
     <script type="text/javascript">
-
-        console.log('Init Widget SDK');
-
         window.widget = {
           userId: '::userId::',
           appId: '::appId::',
@@ -30,66 +24,69 @@
           sections: '::sections::'.split(',')
         };
 
-        var t = setInterval(function() {
-        if (window.CRBWidget && window.NativeStorage) {
-          clearInterval(t);
+        console.log('Widget data', window.widget);
 
-          console.log('Check JS Bridge', window.WebViewJavascriptBridge);
+        var script = document.createElement('script');
+        script.src = '::widgetUrl::';
+        script.defer = true;
+        script.onload = function() {
+            console.log('Check JS Bridge', window.WebViewJavascriptBridge);
 
-          var nativeStorage = window.NativeStorage;
-          console.log('Check NativeStorage', nativeStorage);
+            var nativeStorage = window.NativeStorage;
+            console.log('Check NativeStorage', nativeStorage);
 
-          window.CRBWidget.init({
-            uid: window.widget.userId,
-            appId: window.widget.appId,
-            env: window.widget.env,
-            mode: window.widget.mode,
-            sections: window.widget.sections,
+            window.CRBWidget.init({
+                uid: window.widget.userId,
+                appId: window.widget.appId,
+                env: window.widget.env,
+                mode: window.widget.mode,
+                sections: window.widget.sections,
+            });
 
-            processNonFungibleReward: function(params) {
-              console.log('Not implemented');
-            },
+            window.CRBWidget
+                .setMode('login')
+                .onSetStorageItem(function(key, value) {
+                    return nativeStorage.setItem(key, value)
+                        .then(function(data) {
+                            var res = null;
 
-            setStorageItem: function(key, value) {
-              return nativeStorage.setItem(key, value)
-                .then(function(data) {
-                   var res = null;
+                            if (data) {
+                                try {
+                                    res = JSON.parse(data);
+                                } catch (e) {
+                                    res = data;
+                                }
+                            }
 
-                   if (data) {
-                     try {
-                       res = JSON.parse(data);
-                     } catch (e) {
-                       res = data;
-                     }
-                   }
+                            console.log('WidgetAndroidSDK::setStorageItem result', res);
+                            return res;
+                        });
+                })
+                .onGetStorageItem(function(key) {
+                    return nativeStorage.getItem(key)
+                        .then(function(data) {
+                            var res = null;
 
-                   console.log('WidgetAndroidSDK::setStorageItem result', res);
-                   return res;
-                });
-            },
+                            if (data) {
+                                try {
+                                    res = JSON.parse(data);
+                                } catch (e) {
+                                    res = data;
+                                }
+                            }
 
-            getStorageItem: function(key) {
-              return nativeStorage.getItem(key)
-                .then(function(data) {
-                   var res = null;
+                            console.log('WidgetAndroidSDK::getStorageItem result', res);
+                            return res;
+                })
+                .show()
+                .expand();
+            });
+        };
 
-                   if (data) {
-                     try {
-                       res = JSON.parse(data);
-                     } catch (e) {
-                       res = data;
-                     }
-                   }
-
-                   console.log('WidgetAndroidSDK::getStorageItem result', res);
-                   return res;
-                });
-            }
-          });
-        } else {
-          console.log('Waiting for initialization');
-        }
-      }, 1000);
+        var firstScript = document.getElementsByTagName('script')[0];
+        firstScript.parentNode.insertBefore(script, firstScript);
     </script>
+</head>
+<body>
 </body>
 </html>
