@@ -8,83 +8,91 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width shrink-to-fit=no">
 
     <style>
-    html, body, #root {
-      min-height: 100% !important;
-      height: 100%;
-      width: 100%
-    }
-  </style>
+        html, body, #root {
+            min-height: 100% !important;
+            height: 100%;
+            width: 100%
+        }
+    </style>
 
     <script type="text/javascript">
-    window.widget = {
-      userId: '::userId::',
-      appId: '::appId::',
-      env: '::env::',
-      mode: '::mode::',
-      sections: '::sections::'.split(',')
-    };
+      window.widget = {
+        userId: '::userId::',
+        appId: '::appId::',
+        env: '::env::',
+        mode: '::mode::',
+        sections: '::sections::'.split(',')
+      };
 
-    console.log('Widget data', window.widget);
+      console.log('Widget data', window.widget);
 
-    var script = document.createElement('script');
-    script.src = '::widgetUrl::';
-    script.defer = true;
-    script.onload = function() {
-      console.log('Check JS Bridge', window.WebViewJavascriptBridge);
+      var script = document.createElement('script');
+      script.src = '::widgetUrl::';
+      script.defer = true;
+      script.onload = function() {
 
-      var nativeStorage = window.NativeStorage;
-      console.log('Check NativeStorage', nativeStorage);
+        var t = setInterval(function() {
 
-      window.CRBWidget.init({
-        uid: window.widget.userId,
-        appId: window.widget.appId,
-        env: window.widget.env,
-        sections: window.widget.sections,
-        setStorageItem: function (key, value) {
-          return nativeStorage.setItem(key, value)
-            .then(function (data) {
-              var res = null;
+          console.log('Check JS Bridge', window.WebViewJavascriptBridge);
+          var nativeStorage = window.NativeStorage;
+          console.log('Check NativeStorage', nativeStorage);
 
-              if (data) {
-                try {
-                  res = JSON.parse(data);
-                } catch (e) {
-                  res = data;
-                }
+          if (window.WebViewJavascriptBridge && nativeStorage) {
+            clearInterval(t);
+            t = null;
+
+            window.CRBWidget.init({
+              uid: window.widget.userId,
+              appId: window.widget.appId,
+              env: window.widget.env,
+              sections: window.widget.sections,
+              setStorageItem: function (key, value) {
+                return nativeStorage.setItem(key, value)
+                  .then(function (data) {
+                    var res = null;
+
+                    if (data) {
+                      try {
+                        res = JSON.parse(data);
+                      } catch (e) {
+                        res = data;
+                      }
+                    }
+
+                    console.log('WidgetAndroidSDK::setStorageItem result', res);
+                    return res;
+                  });
+              },
+              getStorageItem: function (key) {
+                return nativeStorage.getItem(key)
+                  .then(function (data) {
+                    var res = null;
+
+                    if (data) {
+                      try {
+                        res = JSON.parse(data);
+                      } catch (e) {
+                        res = data;
+                      }
+                    }
+
+                    console.log('WidgetAndroidSDK::getStorageItem result', res);
+                    return res;
+                  });
               }
-
-              console.log('WidgetAndroidSDK::setStorageItem result', res);
-              return res;
             });
-        },
-        getStorageItem: function (key) {
-          return nativeStorage.getItem(key)
-            .then(function (data) {
-              var res = null;
 
-              if (data) {
-                try {
-                  res = JSON.parse(data);
-                } catch (e) {
-                  res = data;
-                }
-              }
+            window.CRBWidget
+              .setMode(window.widget.mode)
+              .show()
+              .collapse();
+          }
+        }, 1000);
+      };
 
-              console.log('WidgetAndroidSDK::getStorageItem result', res);
-              return res;
-            });
-        }
-      });
-
-      window.CRBWidget
-        .setMode(window.widget.mode)
-        .show()
-        .collapse();
-    };
-
-    var firstScript = document.getElementsByTagName('script')[0];
-    firstScript.parentNode.insertBefore(script, firstScript);
-  </script>
+      var firstScript = document.getElementsByTagName('script')[0];
+      firstScript.parentNode.insertBefore(script, firstScript);
+    </script>
 </head>
 <body>
 </body>
