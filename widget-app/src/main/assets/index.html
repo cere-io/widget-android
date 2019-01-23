@@ -39,13 +39,8 @@
                 uid: window.widget.userId,
                 appId: window.widget.appId,
                 env: window.widget.env,
-                mode: window.widget.mode,
                 sections: window.widget.sections,
-            });
-
-            window.CRBWidget
-                .setMode('login')
-                .onSetStorageItem(function(key, value) {
+                setStorageItem: function(key, value) {
                     return nativeStorage.setItem(key, value)
                         .then(function(data) {
                             var res = null;
@@ -61,8 +56,8 @@
                             console.log('WidgetAndroidSDK::setStorageItem result', res);
                             return res;
                         });
-                })
-                .onGetStorageItem(function(key) {
+                },
+                getStorageItem: function(key) {
                     return nativeStorage.getItem(key)
                         .then(function(data) {
                             var res = null;
@@ -77,9 +72,13 @@
 
                             console.log('WidgetAndroidSDK::getStorageItem result', res);
                             return res;
-                })
+                }
+            });
+
+            window.CRBWidget
+                .setMode(window.widget.mode)
                 .show()
-                .expand();
+                .collapse();
             });
         };
 
