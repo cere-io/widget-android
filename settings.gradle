@@ -1,2 +1,3 @@
-include ':widget-app'
+include ':widget-app', ':library'
 rootProject.name = 'widget-android'
+project(':library').projectDir = new File('JsBridge/library')

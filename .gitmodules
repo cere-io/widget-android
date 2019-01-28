@@ -1,0 +1,3 @@
+[submodule "JsBridge"]
+	path = JsBridge
+	url = git@github.com:funler/JsBridge.git
