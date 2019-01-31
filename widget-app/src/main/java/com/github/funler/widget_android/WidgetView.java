@@ -15,9 +15,11 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class WidgetView extends BridgeWebView {
@@ -29,23 +31,15 @@ public class WidgetView extends BridgeWebView {
     private WidgetMode mode = WidgetMode.REWARDS;
     private String appId = "";
     private String userId = "";
-    private String[] sections = {};
-
-    private String sdkUrl;
-    private String widgetUrl;
+    private List<String> sections = Collections.EMPTY_LIST;
+    private boolean initialized = false;
+    private List<Java2JSHandler> java2JSHandlers = new ArrayList<>();
 
     private int defaultWidth = 0;
     private int defaultHeight = 0;
 
     public WidgetView(Context context) {
         super(context);
-    }
-
-    public WidgetView(Context context, String appId, String userId, String[] sections) {
-        super(context);
-        this.appId = appId;
-        this.userId = userId;
-        this.sections = sections;
     }
 
     public WidgetView(Context context, AttributeSet attrs) {
@@ -56,23 +50,111 @@ public class WidgetView extends BridgeWebView {
         super(context, attrs, defStyle);
     }
 
-    public WidgetView setAppId(String appId) {
+    public WidgetView init(String appId, String userId, List<String> sections) {
+        return init(appId, userId, sections, WidgetEnv.PRODUCTION);
+    }
+
+    private WidgetView init(String appId, String userId, List<String> sections, WidgetEnv env) {
         this.appId = appId;
-        return this;
-    }
-
-    public WidgetView setUserId(String userId) {
         this.userId = userId;
+        this.sections = sections;
+        this.env = env;
+        load();
+
         return this;
     }
 
-    public WidgetView setSections(String[] sections) {
-        this.sections = sections;
+    public void logout() {
+        // TODO: clear all data in local storage
+        putOrProcessHandler(() -> {
+            this.callHandler("logout", "", (String data) -> {
+                Log.d(TAG, "logged out");
+                this.reloadWidgetView();
+            });
+        });
+    }
+
+    public WidgetView sendDataToField(String fieldName, String value) {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("sendToField", "'" + fieldName + "', '" + value + "'");
+        });
+
         return this;
     }
 
     public WidgetView setMode(WidgetMode mode) {
         this.mode = mode;
+
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'");
+        });
+
+        return this;
+    }
+
+    public WidgetView setUserData(JSONObject jsonObject) {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("setUserData", jsonObject.toString());
+        });
+
+        return this;
+    }
+
+    public WidgetView show() {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("show", null);
+            callWidgetJavascript("expand", null);
+        });
+
+        return this;
+    }
+
+    public WidgetView hide() {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("hide", null);
+        });
+
+        return this;
+    }
+
+    public WidgetView collapse() {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("collapse", null);
+        });
+
+        return this;
+    }
+
+    public WidgetView expand() {
+        putOrProcessHandler(() -> {
+            callWidgetJavascript("expand", null);
+        });
+
+        return this;
+    }
+
+    public int getDefaultWidth() {
+        return defaultWidth;
+    }
+
+    public void setDefaultWidth(int defaultWidth) {
+        this.defaultWidth = defaultWidth;
+    }
+
+    public int getDefaultHeight() {
+        return defaultHeight;
+    }
+
+    public void setDefaultHeight(int defaultHeight) {
+        this.defaultHeight = defaultHeight;
+    }
+
+    public WidgetView onHide(OnHideHandler handler) {
+        this.registerHandler("onHide", (Context context, String data, CallBackFunction function) -> {
+            handler.handle();
+            function.onCallBack(null);
+        });
+
         return this;
     }
 
@@ -83,6 +165,7 @@ public class WidgetView extends BridgeWebView {
                 handler.handle(
                         jsonObject.getString("email"),
                         jsonObject.getString("token"),
+                        jsonObject.getString("password"),
                         prepareExtras(jsonObject)
                 );
             } catch (JSONException e) {
@@ -91,6 +174,7 @@ public class WidgetView extends BridgeWebView {
                 function.onCallBack(null);
             }
         });
+
         return this;
     }
 
@@ -109,7 +193,24 @@ public class WidgetView extends BridgeWebView {
                 function.onCallBack(null);
             }
         });
+
         return this;
+    }
+
+    public WidgetView onGetUserByEmail(OnGetUserByEmail handler) {
+        this.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
+            handler.handle(email, exists -> {
+                function.onCallBack(exists + "");
+            });
+        });
+
+        return this;
+    }
+
+    private void callWidgetJavascript(String method, String data) {
+        String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
+        Log.d(TAG, jsCommand);
+        this.loadUrl(jsCommand);
     }
 
     private Map<String, String> prepareExtras(JSONObject jsonObject) throws JSONException {
@@ -129,43 +230,28 @@ public class WidgetView extends BridgeWebView {
         return extras;
     }
 
-    public WidgetView onGetUserEmailById() {
-        return this;
-    }
-
-    public WidgetView show() {
-        return this;
-    }
-
-    public WidgetView hide() {
-        return this;
-    }
-
-    public WidgetView collapse() {
-        return this;
-    }
-
-    public WidgetView expand() {
-        return this;
-    }
-
-    public WidgetView load() {
-        return load(WidgetEnv.PRODUCTION, WidgetEnv.PRODUCTION.sdkURL(), WidgetEnv.PRODUCTION.widgetURL());
-    }
-
     protected WidgetView reloadWidgetView() {
-        return load(this.env, this.sdkUrl, this.widgetUrl);
+        return load();
     }
 
     protected static WidgetView getInstance() {
         return INSTANCE;
     }
 
-    private WidgetView load(WidgetEnv env) {
-        return load(env, env.sdkURL(), env.widgetURL());
+    protected void setInitialized(boolean initialized) {
+        if (this.initialized != initialized) {
+            this.initialized = initialized;
+
+            if (this.initialized) {
+                while (!java2JSHandlers.isEmpty()) {
+                    Log.d(TAG, "Will process handler queue");
+                    java2JSHandlers.remove(0).handle();
+                }
+            }
+        }
     }
 
-    private WidgetView load(WidgetEnv env, String sdkUrl, String widgetUrl) {
+    private WidgetView load() {
         INSTANCE = this;
 
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
@@ -175,15 +261,12 @@ public class WidgetView extends BridgeWebView {
         this.setBackgroundColor(Color.TRANSPARENT);
         this.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
-        this.sdkUrl = sdkUrl;
-        this.widgetUrl = widgetUrl;
-        this.env = env;
         String jsPostfix = "/static/js/bundle.js";
 
-        String html = generateHTML(sdkUrl + jsPostfix);
+        String html = generateHTML(this.env.sdkURL() + jsPostfix);
         Log.d(TAG, "Load HTML:\n" + html);
 
-        this.loadDataWithBaseURL(widgetUrl, html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
         this.measure();
 
         return this;
@@ -221,32 +304,6 @@ public class WidgetView extends BridgeWebView {
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
     }
 
-    private boolean isProduction() {
-        return this.env == WidgetEnv.PRODUCTION;
-    }
-
-    private WidgetView setEnv(WidgetEnv env) {
-        this.env = env;
-        load();
-        return this;
-    }
-
-    public int getDefaultWidth() {
-        return defaultWidth;
-    }
-
-    public void setDefaultWidth(int defaultWidth) {
-        this.defaultWidth = defaultWidth;
-    }
-
-    public int getDefaultHeight() {
-        return defaultHeight;
-    }
-
-    public void setDefaultHeight(int defaultHeight) {
-        this.defaultHeight = defaultHeight;
-    }
-
     private void measure() {
         Log.d(TAG, "Measure initial size and store: " + this.getWidth() + "x" + this.getHeight());
         this.setDefaultWidth(this.getWidth());
@@ -265,6 +322,31 @@ public class WidgetView extends BridgeWebView {
     }
 
     public interface OnSignUpHandler {
-        void handle(String email, String token, Map<String, String> extras);
+        void handle(String email, String token, String password, Map<String, String> extras);
+    }
+
+    public interface OnGetUserByEmail {
+        void handle(String email, ResponseCallback callback);
+
+        public interface ResponseCallback {
+            void handle(boolean exists);
+        }
+    }
+
+    public interface OnHideHandler {
+        void handle();
+    }
+
+    private interface Java2JSHandler {
+        void handle();
+    }
+
+    private void putOrProcessHandler(Java2JSHandler handler) {
+        if (initialized) {
+            handler.handle();
+        } else {
+            Log.d(TAG, "Will postpone handler");
+            java2JSHandlers.add(handler);
+        }
     }
 }

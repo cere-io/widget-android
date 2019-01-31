@@ -31,6 +31,21 @@
       script.defer = true;
       script.onload = function() {
 
+        function processPromise(data) {
+          var res = null;
+
+          if (data) {
+            try {
+              res = JSON.parse(data);
+            } catch (e) {
+              res = data;
+            }
+          }
+
+          console.log('WidgetAndroidSDK::result', res);
+          return res;
+        }
+
         var t = setInterval(function() {
 
           console.log('Check JS Bridge', window.WebViewJavascriptBridge);
@@ -41,51 +56,45 @@
             clearInterval(t);
             t = null;
 
+            var jsBridge = window.WebViewJavascriptBridge;
+
+            console.log(jsBridge);
+
             window.CRBWidget.init({
               uid: window.widget.userId,
               appId: window.widget.appId,
               env: window.widget.env,
               sections: window.widget.sections,
+              mode: window.widget.mode,
               setStorageItem: function (key, value) {
                 return nativeStorage.setItem(key, value)
-                  .then(function (data) {
-                    var res = null;
-
-                    if (data) {
-                      try {
-                        res = JSON.parse(data);
-                      } catch (e) {
-                        res = data;
-                      }
-                    }
-
-                    console.log('WidgetAndroidSDK::setStorageItem result', res);
-                    return res;
-                  });
+                  .then(processPromise);
               },
               getStorageItem: function (key) {
                 return nativeStorage.getItem(key)
-                  .then(function (data) {
-                    var res = null;
-
-                    if (data) {
-                      try {
-                        res = JSON.parse(data);
-                      } catch (e) {
-                        res = data;
-                      }
-                    }
-
-                    console.log('WidgetAndroidSDK::getStorageItem result', res);
-                    return res;
-                  });
+                  .then(processPromise);
               }
             });
 
-            window.CRBWidget
-              .setMode(window.widget.mode)
-              .show()
-              .collapse();
+            window.CRBWidget.onInitialized(function() {
+              console.log('===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Widget Initialized');
+              jsBridge.callHandler('initialized', {}, function(response) {});
+            });
+
+            window.CRBWidget.onGetUserByEmail(function(email) {
+              jsBridge.callHandler('onGetUserByEmail', email, function(response) {
+                console.log('===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Widget onGetUserByEmail: ' + response);
+              });
+            });
+
+            window.CRBWidget.onHide(function() {
+              jsBridge.callHandler('onHide', {}, function(response) {});
+            });
+
+            jsBridge.registerHandler('logout', function(data, callback) {
+              window.CRBWidget.logout()
+                .then(callback);
+            });
           }
         }, 1000);
       };
