@@ -1,6 +1,7 @@
 package com.github.funler.widget_android;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
@@ -63,6 +64,14 @@ public enum JS2JavaHandlers {
     initialized((Context context, String data, CallBackFunction function) -> {
         WidgetView.getInstance().setInitialized(true);
         function.onCallBack(null);
+    }),
+
+    share((Context context, String data, CallBackFunction function) -> {
+        Intent send = new Intent();
+        send.setAction(Intent.ACTION_SEND);
+        send.putExtra(Intent.EXTRA_TEXT, data);
+        send.setType("text/plain");
+        context.startActivity(send);
     });
 
     private BridgeHandler handler;
