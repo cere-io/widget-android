@@ -1,6 +1,7 @@
 package com.github.funler.widget_android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -65,11 +66,9 @@ public class WidgetView extends BridgeWebView {
     }
 
     public void logout() {
-        // TODO: clear all data in local storage
         putOrProcessHandler(() -> {
             this.callHandler("logout", "", (String data) -> {
                 Log.d(TAG, "logged out");
-                this.reloadWidgetView();
             });
         });
     }
@@ -102,7 +101,8 @@ public class WidgetView extends BridgeWebView {
 
     public WidgetView show() {
         putOrProcessHandler(() -> {
-            callWidgetJavascript("show", null);
+//            callWidgetJavascript("show", null);
+            this.setVisibility(VISIBLE);
             callWidgetJavascript("expand", null);
         });
 
@@ -111,6 +111,7 @@ public class WidgetView extends BridgeWebView {
 
     public WidgetView hide() {
         putOrProcessHandler(() -> {
+            this.setVisibility(INVISIBLE);
             callWidgetJavascript("hide", null);
         });
 
@@ -230,8 +231,12 @@ public class WidgetView extends BridgeWebView {
         return extras;
     }
 
-    protected WidgetView reloadWidgetView() {
-        return load();
+    protected void clear() {
+        SharedPreferences.Editor prefs = getContext().getSharedPreferences("storage", Context.MODE_PRIVATE).edit();
+        for (StorageKeys sk : StorageKeys.values()) {
+            prefs.remove(sk.desc());
+        }
+        prefs.apply();
     }
 
     protected static WidgetView getInstance() {
@@ -328,7 +333,7 @@ public class WidgetView extends BridgeWebView {
     public interface OnGetUserByEmail {
         void handle(String email, ResponseCallback callback);
 
-        public interface ResponseCallback {
+        interface ResponseCallback {
             void handle(boolean exists);
         }
     }
@@ -348,5 +353,25 @@ public class WidgetView extends BridgeWebView {
             Log.d(TAG, "Will postpone handler");
             java2JSHandlers.add(handler);
         }
+    }
+
+    private enum StorageKeys {
+        ACCOUNT("account"),
+        PRIVATE_KEY("pk"),
+        ENC_PRIVATE_KEY("enc_pk"),
+        PUBLIC_KEY("pub_k"),
+        TOKEN("token"),
+        PASSWORD("password"),
+        MNEMONIC("mnemonic"),
+        SALT("salt"),
+        EMAIL("email");
+
+        private String desc;
+
+        StorageKeys(String desc) {
+            this.desc = desc;
+        }
+
+        public String desc() { return this.desc; }
     }
 }

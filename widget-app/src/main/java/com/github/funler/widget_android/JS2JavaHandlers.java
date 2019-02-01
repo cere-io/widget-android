@@ -10,7 +10,7 @@ import com.github.funler.jsbridge.CallBackFunction;
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "logout");
-        WidgetView.getInstance().reloadWidgetView();
+        WidgetView.getInstance().clear();
         function.onCallBack("true");
     }),
 
