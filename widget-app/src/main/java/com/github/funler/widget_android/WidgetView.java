@@ -198,6 +198,29 @@ public class WidgetView extends BridgeWebView {
         return this;
     }
 
+    public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
+        this.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
+            handler.handle(data);
+            function.onCallBack(null);
+        });
+
+        return this;
+    }
+
+    public WidgetView onGetClaimedRewards(OnGetClaimedRewards handler) {
+        this.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
+            handler.handle(data1 -> {
+                if (data1 == null) {
+                    function.onCallBack("[]");
+                } else {
+                    function.onCallBack(data1);
+                }
+            });
+        });
+
+        return this;
+    }
+
     public WidgetView onGetUserByEmail(OnGetUserByEmail handler) {
         this.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
             handler.handle(email, exists -> {
@@ -335,6 +358,18 @@ public class WidgetView extends BridgeWebView {
 
         interface ResponseCallback {
             void handle(boolean exists);
+        }
+    }
+
+    public interface OnProcessNonFungibleRewardHandler {
+        void handle(String url);
+    }
+
+    public interface OnGetClaimedRewards {
+        void handle(ResponseCallback callback);
+
+        interface ResponseCallback {
+            void handle(String data);
         }
     }
 
