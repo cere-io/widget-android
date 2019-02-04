@@ -71,7 +71,7 @@ public enum JS2JavaHandlers {
         send.setAction(Intent.ACTION_SEND);
         send.putExtra(Intent.EXTRA_TEXT, data);
         send.setType("text/plain");
-        context.startActivity(send);
+        context.startActivity(Intent.createChooser(send, "Share"));
     });
 
     private BridgeHandler handler;
