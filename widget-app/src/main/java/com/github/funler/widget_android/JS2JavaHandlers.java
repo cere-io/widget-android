@@ -2,11 +2,19 @@ package com.github.funler.widget_android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
@@ -66,12 +74,47 @@ public enum JS2JavaHandlers {
         function.onCallBack(null);
     }),
 
+    getAppsInfo((Context context, String data, CallBackFunction function) -> {
+        List<AppInfo> appsInfo = new ApkInfoExtractor(context).getInstalledAppsInfo();
+
+        JSONArray array = new JSONArray();
+        for (AppInfo appInfo : appsInfo) {
+            array.put(appInfo.toJSON());
+        }
+
+        function.onCallBack(array.toString());
+    }),
+
+    shareWith((Context context, String data, CallBackFunction function) -> {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            if (isAppAvailable(context, jsonObject.getString("packageName"))) {
+                Intent send = new Intent();
+                send.setAction(Intent.ACTION_SEND);
+                send.setPackage(jsonObject.getString("packageName"));
+                send.putExtra(Intent.EXTRA_TEXT, jsonObject.getString("data"));
+                send.setType("text/plain");
+                Intent chooser = Intent.createChooser(send, "Share");
+                context.startActivity(chooser);
+            } else {
+                Toast.makeText(context, jsonObject.getString("appName") + " is not installed", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        function.onCallBack(null);
+    }),
+
     share((Context context, String data, CallBackFunction function) -> {
         Intent send = new Intent();
         send.setAction(Intent.ACTION_SEND);
         send.putExtra(Intent.EXTRA_TEXT, data);
         send.setType("text/plain");
-        context.startActivity(Intent.createChooser(send, "Share"));
+
+        Intent chooser = Intent.createChooser(send, "Share");
+        context.startActivity(chooser);
+        function.onCallBack(null);
     });
 
     private BridgeHandler handler;
@@ -82,6 +125,16 @@ public enum JS2JavaHandlers {
 
     public BridgeHandler handler() {
         return handler;
+    }
+
+    private static boolean isAppAvailable(Context context, String packageName) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     private static String getTag() {

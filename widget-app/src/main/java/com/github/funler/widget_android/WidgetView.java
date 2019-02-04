@@ -66,36 +66,23 @@ public class WidgetView extends BridgeWebView {
     }
 
     public void logout() {
-        putOrProcessHandler(() -> {
-            this.callHandler("logout", "", (String data) -> {
-                Log.d(TAG, "logged out");
-            });
-        });
+        putOrProcessHandler(() -> this.callHandler("logout", "", (String data) -> Log.d(TAG, "logged out")));
     }
 
     public WidgetView sendDataToField(String fieldName, String value) {
-        putOrProcessHandler(() -> {
-            callWidgetJavascript("sendToField", "'" + fieldName + "', '" + value + "'");
-        });
-
+        putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'" + fieldName + "', '" + value + "'"));
         return this;
     }
 
     public WidgetView setMode(WidgetMode mode) {
         this.mode = mode;
 
-        putOrProcessHandler(() -> {
-            callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'");
-        });
-
+        putOrProcessHandler(() -> callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'"));
         return this;
     }
 
     public WidgetView setUserData(JSONObject jsonObject) {
-        putOrProcessHandler(() -> {
-            callWidgetJavascript("setUserData", jsonObject.toString());
-        });
-
+        putOrProcessHandler(() -> callWidgetJavascript("setUserData", jsonObject.toString()));
         return this;
     }
 
@@ -119,18 +106,12 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView collapse() {
-        putOrProcessHandler(() -> {
-            callWidgetJavascript("collapse", null);
-        });
-
+        putOrProcessHandler(() -> callWidgetJavascript("collapse", null));
         return this;
     }
 
     public WidgetView expand() {
-        putOrProcessHandler(() -> {
-            callWidgetJavascript("expand", null);
-        });
-
+        putOrProcessHandler(() -> callWidgetJavascript("expand", null));
         return this;
     }
 
@@ -223,9 +204,7 @@ public class WidgetView extends BridgeWebView {
 
     public WidgetView onGetUserByEmail(OnGetUserByEmail handler) {
         this.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
-            handler.handle(email, exists -> {
-                function.onCallBack(exists + "");
-            });
+            handler.handle(email, exists -> function.onCallBack(exists + ""));
         });
 
         return this;
