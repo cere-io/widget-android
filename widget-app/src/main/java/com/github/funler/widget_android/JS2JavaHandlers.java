@@ -3,9 +3,9 @@ package com.github.funler.widget_android;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -88,16 +88,22 @@ public enum JS2JavaHandlers {
     shareWith((Context context, String data, CallBackFunction function) -> {
         try {
             JSONObject jsonObject = new JSONObject(data);
-            if (isAppAvailable(context, jsonObject.getString("packageName"))) {
-                Intent send = new Intent();
-                send.setAction(Intent.ACTION_SEND);
-                send.setPackage(jsonObject.getString("packageName"));
-                send.putExtra(Intent.EXTRA_TEXT, jsonObject.getString("data"));
+            JSONObject app = jsonObject.getJSONObject("app");
+
+            String packageName = app.getString("androidId");
+            String dataToShare = jsonObject.getString("data");
+
+            if (isAppAvailable(context, packageName)) {
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setPackage(packageName);
+                send.putExtra(Intent.EXTRA_TEXT, dataToShare);
                 send.setType("text/plain");
                 Intent chooser = Intent.createChooser(send, "Share");
                 context.startActivity(chooser);
             } else {
-                Toast.makeText(context, jsonObject.getString("appName") + " is not installed", Toast.LENGTH_SHORT).show();
+                Intent googlePlay = new Intent(Intent.ACTION_VIEW);
+                googlePlay.setData(Uri.parse("market://details?id=" + packageName));
+                context.startActivity(googlePlay);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -107,8 +113,7 @@ public enum JS2JavaHandlers {
     }),
 
     share((Context context, String data, CallBackFunction function) -> {
-        Intent send = new Intent();
-        send.setAction(Intent.ACTION_SEND);
+        Intent send = new Intent(Intent.ACTION_SEND);
         send.putExtra(Intent.EXTRA_TEXT, data);
         send.setType("text/plain");
 
