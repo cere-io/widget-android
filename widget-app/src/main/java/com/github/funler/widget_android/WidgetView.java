@@ -99,7 +99,6 @@ public class WidgetView extends BridgeWebView {
     public WidgetView hide() {
         putOrProcessHandler(() -> {
             this.setVisibility(INVISIBLE);
-            callWidgetJavascript("hide", null);
         });
 
         return this;

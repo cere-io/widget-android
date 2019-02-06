@@ -59,13 +59,13 @@ public enum JS2JavaHandlers {
 
     show((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "show");
-        WidgetView.getInstance().setVisibility(View.VISIBLE);
+        WidgetView.getInstance().show();
         function.onCallBack(null);
     }),
 
     hide((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "hide");
-        WidgetView.getInstance().setVisibility(View.INVISIBLE);
+        WidgetView.getInstance().hide();
         function.onCallBack(null);
     }),
 
