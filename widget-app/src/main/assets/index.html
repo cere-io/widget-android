@@ -87,10 +87,6 @@
               });
             });
 
-            window.CRBWidget.onHide(function() {
-              jsBridge.callHandler('onHide', {}, function(response) {});
-            });
-
             jsBridge.registerHandler('logout', function(data, callback) {
               window.CRBWidget.logout()
                 .then(callback);

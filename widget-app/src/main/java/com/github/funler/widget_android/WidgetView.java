@@ -36,6 +36,8 @@ public class WidgetView extends BridgeWebView {
     private boolean initialized = false;
     private List<Java2JSHandler> java2JSHandlers = new ArrayList<>();
 
+    private OnHideHandler onHideHandler = null;
+
     private int defaultWidth = 0;
     private int defaultHeight = 0;
 
@@ -101,6 +103,10 @@ public class WidgetView extends BridgeWebView {
             this.setVisibility(INVISIBLE);
         });
 
+        if (onHideHandler != null) {
+            onHideHandler.handle();
+        }
+
         return this;
     }
 
@@ -131,11 +137,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView onHide(OnHideHandler handler) {
-        this.registerHandler("onHide", (Context context, String data, CallBackFunction function) -> {
-            handler.handle();
-            function.onCallBack(null);
-        });
-
+        onHideHandler = handler;
         return this;
     }
 
