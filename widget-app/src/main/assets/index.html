@@ -81,12 +81,6 @@
               jsBridge.callHandler('initialized', {}, function(response) {});
             });
 
-            window.CRBWidget.onGetUserByEmail(function(email) {
-              jsBridge.callHandler('onGetUserByEmail', email, function(response) {
-                console.log('===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Widget onGetUserByEmail: ' + response);
-              });
-            });
-
             jsBridge.registerHandler('logout', function(data, callback) {
               window.CRBWidget.logout()
                 .then(callback);
