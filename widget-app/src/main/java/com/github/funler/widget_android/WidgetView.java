@@ -92,19 +92,12 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView show() {
-        putOrProcessHandler(() -> {
-//            callWidgetJavascript("show", null);
-            this.setVisibility(VISIBLE);
-            callWidgetJavascript("expand", null);
-        });
-
+        this.setVisibility(VISIBLE);
         return this;
     }
 
     public WidgetView hide() {
-        putOrProcessHandler(() -> {
-            this.setVisibility(INVISIBLE);
-        });
+        this.setVisibility(INVISIBLE);
 
         if (onHideHandler != null) {
             onHideHandler.handle();
@@ -114,12 +107,17 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView collapse() {
-        putOrProcessHandler(() -> callWidgetJavascript("collapse", null));
+        // TODO: to implement
         return this;
     }
 
     public WidgetView expand() {
-        putOrProcessHandler(() -> callWidgetJavascript("expand", null));
+        // TODO: to implement
+        return this;
+    }
+
+    public WidgetView restore() {
+        // TODO: to implement
         return this;
     }
 

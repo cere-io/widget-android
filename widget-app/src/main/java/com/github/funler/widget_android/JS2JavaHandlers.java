@@ -44,7 +44,8 @@ public enum JS2JavaHandlers {
 //        } finally {
 //            function.onCallBack(null);
 //        }
-        WidgetView.getInstance().setVisibility(View.INVISIBLE);
+//        WidgetView.getInstance().setVisibility(View.INVISIBLE);
+        WidgetView.getInstance().collapse();
         function.onCallBack(null);
     }),
 
@@ -53,7 +54,14 @@ public enum JS2JavaHandlers {
 //        WidgetView widget = WidgetView.getInstance();
 //        widget.resize(widget.getDefaultWidth(), widget.getDefaultHeight());
 //        function.onCallBack(null);
-        WidgetView.getInstance().setVisibility(View.VISIBLE);
+//        WidgetView.getInstance().setVisibility(View.VISIBLE);
+        WidgetView.getInstance().expand();
+        function.onCallBack(null);
+    }),
+
+    restore((Context context, String data, CallBackFunction function) -> {
+        Log.d(getTag(), "restore, data: " + data);
+        WidgetView.getInstance().restore();
         function.onCallBack(null);
     }),
 
