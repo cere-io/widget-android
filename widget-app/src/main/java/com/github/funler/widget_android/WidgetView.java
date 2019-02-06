@@ -43,14 +43,17 @@ public class WidgetView extends BridgeWebView {
 
     public WidgetView(Context context) {
         super(context);
+        this.setVisibility(INVISIBLE);
     }
 
     public WidgetView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.setVisibility(INVISIBLE);
     }
 
     public WidgetView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.setVisibility(INVISIBLE);
     }
 
     public WidgetView init(String appId, String userId, List<String> sections) {
