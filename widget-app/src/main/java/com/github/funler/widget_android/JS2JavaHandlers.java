@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
-import android.view.View;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -25,36 +24,12 @@ public enum JS2JavaHandlers {
 
     collapse((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "collapse, data: " + data);
-//        WidgetView widget = WidgetView.getInstance();
-//
-//        try {
-//            JSONArray dataArray = new JSONArray(data);
-//            if (dataArray.length() != 0) {
-//                int newWidth = dataArray.getInt(0);
-//                int newHeight = dataArray.getInt(1);
-//
-//                float scale = context.getResources().getDisplayMetrics().density;
-//                int widthPx = (int) (newWidth * scale + 0.5f);
-//                int heightPx = (int) (newHeight * scale + 0.5f);
-//
-//                widget.resize(widthPx, heightPx);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } finally {
-//            function.onCallBack(null);
-//        }
-//        WidgetView.getInstance().setVisibility(View.INVISIBLE);
         WidgetView.getInstance().collapse();
         function.onCallBack(null);
     }),
 
     expand((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "expand, data: " + data);
-//        WidgetView widget = WidgetView.getInstance();
-//        widget.resize(widget.getDefaultWidth(), widget.getDefaultHeight());
-//        function.onCallBack(null);
-//        WidgetView.getInstance().setVisibility(View.VISIBLE);
         WidgetView.getInstance().expand();
         function.onCallBack(null);
     }),

@@ -1,10 +1,11 @@
 package com.github.funler.widget_android;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Window;
 import android.webkit.WebView;
 
 import com.github.funler.jsbridge.BridgeWebView;
@@ -23,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class WidgetView extends BridgeWebView {
+public class WidgetView {
 
     private static String TAG = "WidgetView";
     private static WidgetView INSTANCE;
@@ -36,25 +37,21 @@ public class WidgetView extends BridgeWebView {
     private boolean initialized = false;
     private List<Java2JSHandler> java2JSHandlers = new ArrayList<>();
 
+    private Context context;
+    private BridgeWebView bridgeWebView;
+    private Dialog dialog = null;
     private OnHideHandler onHideHandler = null;
 
-    private int defaultWidth = 0;
-    private int defaultHeight = 0;
-
     public WidgetView(Context context) {
-        super(context);
-        this.setVisibility(INVISIBLE);
+        this.context = context;
+        bridgeWebView = new BridgeWebView(context);
+        dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(bridgeWebView);
     }
 
-    public WidgetView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.setVisibility(INVISIBLE);
-    }
-
-    public WidgetView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        this.setVisibility(INVISIBLE);
-    }
+    public Context getContext() { return this.context; }
 
     public WidgetView init(String appId, String userId, List<String> sections) {
         return init(appId, userId, sections, WidgetEnv.PRODUCTION);
@@ -71,7 +68,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public void logout() {
-        putOrProcessHandler(() -> this.callHandler("logout", "", (String data) -> Log.d(TAG, "logged out")));
+        putOrProcessHandler(() -> bridgeWebView.callHandler("logout", "", (String data) -> Log.d(TAG, "logged out")));
     }
 
     public WidgetView sendDataToField(String fieldName, String value) {
@@ -92,12 +89,12 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView show() {
-        this.setVisibility(VISIBLE);
+        dialog.show();
         return this;
     }
 
     public WidgetView hide() {
-        this.setVisibility(INVISIBLE);
+        dialog.hide();
 
         if (onHideHandler != null) {
             onHideHandler.handle();
@@ -121,29 +118,13 @@ public class WidgetView extends BridgeWebView {
         return this;
     }
 
-    public int getDefaultWidth() {
-        return defaultWidth;
-    }
-
-    public void setDefaultWidth(int defaultWidth) {
-        this.defaultWidth = defaultWidth;
-    }
-
-    public int getDefaultHeight() {
-        return defaultHeight;
-    }
-
-    public void setDefaultHeight(int defaultHeight) {
-        this.defaultHeight = defaultHeight;
-    }
-
     public WidgetView onHide(OnHideHandler handler) {
         onHideHandler = handler;
         return this;
     }
 
     public WidgetView onSignUp(OnSignUpHandler handler) {
-        this.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
+        bridgeWebView.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
             try {
                 JSONObject jsonObject = new JSONObject(data);
                 handler.handle(
@@ -163,7 +144,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView onSignIn(OnSignInHandler handler) {
-        this.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
+        bridgeWebView.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
             try {
                 JSONObject jsonObject = new JSONObject(data);
                 handler.handle(
@@ -182,7 +163,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
-        this.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
+        bridgeWebView.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
             handler.handle(data);
             function.onCallBack(null);
         });
@@ -191,7 +172,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView onGetClaimedRewards(OnGetClaimedRewards handler) {
-        this.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
+        bridgeWebView.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
             handler.handle(data1 -> {
                 if (data1 == null) {
                     function.onCallBack("[]");
@@ -205,7 +186,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView onGetUserByEmail(OnGetUserByEmail handler) {
-        this.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
+        bridgeWebView.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
             handler.handle(email, exists -> function.onCallBack(exists + ""));
         });
 
@@ -215,7 +196,7 @@ public class WidgetView extends BridgeWebView {
     private void callWidgetJavascript(String method, String data) {
         String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
         Log.d(TAG, jsCommand);
-        this.loadUrl(jsCommand);
+        bridgeWebView.loadUrl(jsCommand);
     }
 
     private Map<String, String> prepareExtras(JSONObject jsonObject) throws JSONException {
@@ -264,19 +245,18 @@ public class WidgetView extends BridgeWebView {
         INSTANCE = this;
 
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
-            this.registerHandler(handler.name(), handler.handler());
+            bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
 
-        this.setBackgroundColor(Color.TRANSPARENT);
-        this.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+        bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
+        bridgeWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 
         String jsPostfix = "/static/js/bundle.js";
 
         String html = generateHTML(this.env.sdkURL() + jsPostfix);
         Log.d(TAG, "Load HTML:\n" + html);
 
-        this.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
-        this.measure();
+        bridgeWebView.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
 
         return this;
     }
@@ -311,19 +291,6 @@ public class WidgetView extends BridgeWebView {
             stringBuilder.append(section).append(",");
         }
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
-    }
-
-    private void measure() {
-        Log.d(TAG, "Measure initial size and store: " + this.getWidth() + "x" + this.getHeight());
-        this.setDefaultWidth(this.getWidth());
-        this.setDefaultHeight(this.getHeight());
-    }
-
-    protected void resize(int width, int height) {
-        Log.d(TAG, "Resize to: " + width + "x" + height);
-        this.getLayoutParams().width = width;
-        this.getLayoutParams().height = height;
-        this.requestLayout();
     }
 
     public interface OnSignInHandler {
