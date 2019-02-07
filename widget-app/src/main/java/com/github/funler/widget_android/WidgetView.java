@@ -4,9 +4,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
-import android.webkit.WebView;
+import android.webkit.WebSettings;
 
 import com.github.funler.jsbridge.BridgeWebView;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -44,7 +46,20 @@ public class WidgetView {
 
     public WidgetView(Context context) {
         this.context = context;
+
         bridgeWebView = new BridgeWebView(context);
+        bridgeWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 19) {
+            bridgeWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            bridgeWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
+            bridgeWebView.registerHandler(handler.name(), handler.handler());
+        }
+
         dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -244,12 +259,9 @@ public class WidgetView {
     private WidgetView load() {
         INSTANCE = this;
 
-        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
-            bridgeWebView.registerHandler(handler.name(), handler.handler());
-        }
-
-        bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
-        bridgeWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+//        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
+//            bridgeWebView.registerHandler(handler.name(), handler.handler());
+//        }
 
         String jsPostfix = "/static/js/bundle.js";
 
