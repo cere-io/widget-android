@@ -18,7 +18,7 @@ import java.util.List;
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "logout");
-        WidgetView.getInstance().clear();
+        WidgetView.getInstance().logout();
         function.onCallBack("true");
     }),
 
@@ -126,6 +126,6 @@ public enum JS2JavaHandlers {
     }
 
     private static String getTag() {
-        return JS2JavaHandlers.class.getSimpleName();
+        return "WidgetJS2Handler";
     }
 }
