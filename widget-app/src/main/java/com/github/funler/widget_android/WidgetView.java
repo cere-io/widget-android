@@ -165,20 +165,20 @@ public class WidgetView {
             bridgeWebView.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
                 if (data == null || data.equals("null")) {
                     function.onCallBack(null);
-                }
-
-                try {
-                    JSONObject jsonObject = new JSONObject(data);
-                    onSignUpHandler.handle(
-                            jsonObject.getString("email"),
-                            jsonObject.getString("token"),
-                            jsonObject.getString("password"),
-                            prepareExtras(jsonObject)
-                    );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    function.onCallBack(null);
+                } else {
+                    try {
+                        JSONObject jsonObject = new JSONObject(data);
+                        onSignUpHandler.handle(
+                                jsonObject.getString("email"),
+                                jsonObject.getString("token"),
+                                jsonObject.getString("password"),
+                                prepareExtras(jsonObject)
+                        );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                        function.onCallBack(null);
+                    }
                 }
             });
         }
@@ -189,19 +189,19 @@ public class WidgetView {
             bridgeWebView.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
                 if (data == null || data.equals("null")) {
                     function.onCallBack(null);
-                }
-
-                try {
-                    JSONObject jsonObject = new JSONObject(data);
-                    onSignInHandler.handle(
-                            jsonObject.getString("email"),
-                            jsonObject.getString("token"),
-                            prepareExtras(jsonObject)
-                    );
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    function.onCallBack(null);
+                } else {
+                    try {
+                        JSONObject jsonObject = new JSONObject(data);
+                        onSignInHandler.handle(
+                                jsonObject.getString("email"),
+                                jsonObject.getString("token"),
+                                prepareExtras(jsonObject)
+                        );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                        function.onCallBack(null);
+                    }
                 }
             });
         }
