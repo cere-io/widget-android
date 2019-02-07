@@ -118,7 +118,7 @@ public enum JS2JavaHandlers {
     private static boolean isAppAvailable(Context context, String packageName) {
         PackageManager pm = context.getPackageManager();
         try {
-            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
