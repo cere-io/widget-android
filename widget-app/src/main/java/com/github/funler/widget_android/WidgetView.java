@@ -1,14 +1,10 @@
 package com.github.funler.widget_android;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.webkit.WebSettings;
 
 import com.github.funler.jsbridge.BridgeWebView;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -43,7 +39,6 @@ public class WidgetView {
 
     private Context context;
     private BridgeWebView bridgeWebView;
-    private Dialog dialog = null;
 
     private OnSignInHandler onSignInHandler = null;
     private OnSignUpHandler onSignUpHandler = null;
@@ -55,7 +50,6 @@ public class WidgetView {
     public WidgetView(Context context) {
         this.context = context;
         configureWebView();
-        configureDialog();
     }
 
     public Context getContext() { return this.context; }
@@ -96,16 +90,17 @@ public class WidgetView {
     }
 
     public WidgetView show() {
-        dialog.show();
+        Intent intent = new Intent(getContext(), WidgetViewActivity.class);
+        getContext().startActivity(intent);
         return this;
     }
 
     public WidgetView hide() {
-        dialog.hide();
-
         if (onHideHandler != null) {
             onHideHandler.handle();
         }
+
+        getContext().sendBroadcast(new Intent("close_widget_view"));
 
         return this;
     }
@@ -117,11 +112,13 @@ public class WidgetView {
 
     public WidgetView expand() {
         // TODO: to implement
+        getContext().sendBroadcast(new Intent("maximize_widget_view"));
         return this;
     }
 
     public WidgetView restore() {
         // TODO: to implement
+        getContext().sendBroadcast(new Intent("restore_widget_view"));
         return this;
     }
 
@@ -273,6 +270,10 @@ public class WidgetView {
         return INSTANCE;
     }
 
+    protected BridgeWebView getBridgeWebView() {
+        return bridgeWebView;
+    }
+
     protected void setInitialized(boolean initialized) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
@@ -290,7 +291,6 @@ public class WidgetView {
         initialized = false;
         clear();
         configureWebView();
-        configureDialog();
         load();
         registerOnSignInHandler();
         registerOnSignUpHandler();
@@ -311,17 +311,6 @@ public class WidgetView {
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
-    }
-
-    private void configureDialog() {
-        if (dialog != null) {
-            dialog.dismiss();
-        }
-
-        dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
-        dialog.setContentView(bridgeWebView);
     }
 
     private WidgetView load() {
