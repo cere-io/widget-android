@@ -1,11 +1,14 @@
 package com.github.funler.widget_android;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.util.AttributeSet;
+import android.os.Build;
 import android.util.Log;
-import android.webkit.WebView;
+import android.view.View;
+import android.view.Window;
+import android.webkit.WebSettings;
 
 import com.github.funler.jsbridge.BridgeWebView;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -23,38 +26,39 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class WidgetView extends BridgeWebView {
+public class WidgetView {
 
     private static String TAG = "WidgetView";
     private static WidgetView INSTANCE;
 
     private WidgetEnv env = WidgetEnv.PRODUCTION;
     private WidgetMode mode = WidgetMode.REWARDS;
+
     private String appId = "";
     private String userId = "";
     private List<String> sections = Collections.EMPTY_LIST;
+
     private boolean initialized = false;
     private List<Java2JSHandler> java2JSHandlers = new ArrayList<>();
 
+    private Context context;
+    private BridgeWebView bridgeWebView;
+    private Dialog dialog = null;
+
+    private OnSignInHandler onSignInHandler = null;
+    private OnSignUpHandler onSignUpHandler = null;
+    private OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = null;
+    private OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = null;
+    private OnGetUserByEmailHandler onGetUserByEmailHandler = null;
     private OnHideHandler onHideHandler = null;
 
-    private int defaultWidth = 0;
-    private int defaultHeight = 0;
-
     public WidgetView(Context context) {
-        super(context);
-        this.setVisibility(INVISIBLE);
+        this.context = context;
+        configureWebView();
+        configureDialog();
     }
 
-    public WidgetView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.setVisibility(INVISIBLE);
-    }
-
-    public WidgetView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        this.setVisibility(INVISIBLE);
-    }
+    public Context getContext() { return this.context; }
 
     public WidgetView init(String appId, String userId, List<String> sections) {
         return init(appId, userId, sections, WidgetEnv.PRODUCTION);
@@ -71,7 +75,7 @@ public class WidgetView extends BridgeWebView {
     }
 
     public void logout() {
-        putOrProcessHandler(() -> this.callHandler("logout", "", (String data) -> Log.d(TAG, "logged out")));
+        reload();
     }
 
     public WidgetView sendDataToField(String fieldName, String value) {
@@ -92,12 +96,12 @@ public class WidgetView extends BridgeWebView {
     }
 
     public WidgetView show() {
-        this.setVisibility(VISIBLE);
+        dialog.show();
         return this;
     }
 
     public WidgetView hide() {
-        this.setVisibility(INVISIBLE);
+        dialog.hide();
 
         if (onHideHandler != null) {
             onHideHandler.handle();
@@ -121,101 +125,123 @@ public class WidgetView extends BridgeWebView {
         return this;
     }
 
-    public int getDefaultWidth() {
-        return defaultWidth;
-    }
-
-    public void setDefaultWidth(int defaultWidth) {
-        this.defaultWidth = defaultWidth;
-    }
-
-    public int getDefaultHeight() {
-        return defaultHeight;
-    }
-
-    public void setDefaultHeight(int defaultHeight) {
-        this.defaultHeight = defaultHeight;
-    }
-
     public WidgetView onHide(OnHideHandler handler) {
         onHideHandler = handler;
         return this;
     }
 
     public WidgetView onSignUp(OnSignUpHandler handler) {
-        this.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
-            try {
-                JSONObject jsonObject = new JSONObject(data);
-                handler.handle(
-                        jsonObject.getString("email"),
-                        jsonObject.getString("token"),
-                        jsonObject.getString("password"),
-                        prepareExtras(jsonObject)
-                );
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                function.onCallBack(null);
-            }
-        });
-
+        onSignUpHandler = handler;
+        registerOnSignUpHandler();
         return this;
     }
 
     public WidgetView onSignIn(OnSignInHandler handler) {
-        this.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
-            try {
-                JSONObject jsonObject = new JSONObject(data);
-                handler.handle(
-                        jsonObject.getString("email"),
-                        jsonObject.getString("token"),
-                        prepareExtras(jsonObject)
-                );
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                function.onCallBack(null);
-            }
-        });
-
+        onSignInHandler = handler;
+        registerOnSignInHandler();
         return this;
     }
 
     public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
-        this.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
-            handler.handle(data);
-            function.onCallBack(null);
-        });
-
+        onProcessNonFungibleRewardHandler = handler;
+        registerOnProcessNonFungibleRewardHandler();
         return this;
     }
 
-    public WidgetView onGetClaimedRewards(OnGetClaimedRewards handler) {
-        this.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
-            handler.handle(data1 -> {
-                if (data1 == null) {
-                    function.onCallBack("[]");
+    public WidgetView onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
+        onGetClaimedRewardsHandler = handler;
+        registerOnGetClaimedRewardsHandler();
+        return this;
+    }
+
+    public WidgetView onGetUserByEmail(OnGetUserByEmailHandler handler) {
+        onGetUserByEmailHandler = handler;
+        registerOnGetUserByEmailHandler();
+        return this;
+    }
+
+    private void registerOnSignUpHandler() {
+        if (onSignUpHandler != null) {
+            bridgeWebView.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
+                if (data == null || data.equals("null")) {
+                    function.onCallBack(null);
                 } else {
-                    function.onCallBack(data1);
+                    try {
+                        JSONObject jsonObject = new JSONObject(data);
+                        onSignUpHandler.handle(
+                                jsonObject.getString("email"),
+                                jsonObject.getString("token"),
+                                jsonObject.getString("password"),
+                                prepareExtras(jsonObject)
+                        );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                        function.onCallBack(null);
+                    }
                 }
             });
-        });
-
-        return this;
+        }
     }
 
-    public WidgetView onGetUserByEmail(OnGetUserByEmail handler) {
-        this.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
-            handler.handle(email, exists -> function.onCallBack(exists + ""));
-        });
+    private void registerOnSignInHandler() {
+        if (onSignInHandler != null) {
+            bridgeWebView.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
+                if (data == null || data.equals("null")) {
+                    function.onCallBack(null);
+                } else {
+                    try {
+                        JSONObject jsonObject = new JSONObject(data);
+                        onSignInHandler.handle(
+                                jsonObject.getString("email"),
+                                jsonObject.getString("token"),
+                                prepareExtras(jsonObject)
+                        );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } finally {
+                        function.onCallBack(null);
+                    }
+                }
+            });
+        }
+    }
 
-        return this;
+    private void registerOnProcessNonFungibleRewardHandler() {
+        if (onProcessNonFungibleRewardHandler != null) {
+            bridgeWebView.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
+                onProcessNonFungibleRewardHandler.handle(data);
+                function.onCallBack(null);
+            });
+        }
+    }
+
+    private void registerOnGetClaimedRewardsHandler() {
+        if (onGetClaimedRewardsHandler != null) {
+            bridgeWebView.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
+                onGetClaimedRewardsHandler.handle(data1 -> {
+                    if (data1 == null) {
+                        function.onCallBack("[]");
+                    } else {
+                        function.onCallBack(data1);
+                    }
+                });
+            });
+        }
+    }
+
+    private void registerOnGetUserByEmailHandler() {
+        if (onGetUserByEmailHandler != null) {
+            bridgeWebView.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
+                onGetUserByEmailHandler.handle(email, exists -> function.onCallBack(exists + ""));
+            });
+        }
     }
 
     private void callWidgetJavascript(String method, String data) {
         String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
         Log.d(TAG, jsCommand);
-        this.loadUrl(jsCommand);
+        bridgeWebView.loadUrl(jsCommand);
     }
 
     private Map<String, String> prepareExtras(JSONObject jsonObject) throws JSONException {
@@ -260,23 +286,59 @@ public class WidgetView extends BridgeWebView {
         }
     }
 
-    private WidgetView load() {
-        INSTANCE = this;
+    private WidgetView reload() {
+        initialized = false;
+        clear();
+        configureWebView();
+        configureDialog();
+        load();
+        registerOnSignInHandler();
+        registerOnSignUpHandler();
+        registerOnProcessNonFungibleRewardHandler();
+        registerOnGetClaimedRewardsHandler();
+        registerOnGetUserByEmailHandler();
+        return this;
+    }
 
-        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
-            this.registerHandler(handler.name(), handler.handler());
+    private void configureWebView() {
+        if (bridgeWebView != null) {
+            bridgeWebView.clearCache(false);
         }
 
-        this.setBackgroundColor(Color.TRANSPARENT);
-        this.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+        bridgeWebView = new BridgeWebView(context);
+        bridgeWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 19) {
+            bridgeWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            bridgeWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
+            bridgeWebView.registerHandler(handler.name(), handler.handler());
+        }
+    }
+
+    private void configureDialog() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+
+        dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(bridgeWebView);
+    }
+
+    private WidgetView load() {
+        INSTANCE = this;
 
         String jsPostfix = "/static/js/bundle.js";
 
         String html = generateHTML(this.env.sdkURL() + jsPostfix);
         Log.d(TAG, "Load HTML:\n" + html);
 
-        this.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
-        this.measure();
+        bridgeWebView.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
 
         return this;
     }
@@ -313,19 +375,6 @@ public class WidgetView extends BridgeWebView {
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
     }
 
-    private void measure() {
-        Log.d(TAG, "Measure initial size and store: " + this.getWidth() + "x" + this.getHeight());
-        this.setDefaultWidth(this.getWidth());
-        this.setDefaultHeight(this.getHeight());
-    }
-
-    protected void resize(int width, int height) {
-        Log.d(TAG, "Resize to: " + width + "x" + height);
-        this.getLayoutParams().width = width;
-        this.getLayoutParams().height = height;
-        this.requestLayout();
-    }
-
     public interface OnSignInHandler {
         void handle(String email, String token, Map<String, String> extras);
     }
@@ -334,7 +383,7 @@ public class WidgetView extends BridgeWebView {
         void handle(String email, String token, String password, Map<String, String> extras);
     }
 
-    public interface OnGetUserByEmail {
+    public interface OnGetUserByEmailHandler {
         void handle(String email, ResponseCallback callback);
 
         interface ResponseCallback {
@@ -346,7 +395,7 @@ public class WidgetView extends BridgeWebView {
         void handle(String url);
     }
 
-    public interface OnGetClaimedRewards {
+    public interface OnGetClaimedRewardsHandler {
         void handle(ResponseCallback callback);
 
         interface ResponseCallback {

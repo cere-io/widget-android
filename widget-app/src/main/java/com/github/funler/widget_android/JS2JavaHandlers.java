@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
-import android.view.View;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -19,42 +18,18 @@ import java.util.List;
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "logout");
-        WidgetView.getInstance().clear();
+        WidgetView.getInstance().logout();
         function.onCallBack("true");
     }),
 
     collapse((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "collapse, data: " + data);
-//        WidgetView widget = WidgetView.getInstance();
-//
-//        try {
-//            JSONArray dataArray = new JSONArray(data);
-//            if (dataArray.length() != 0) {
-//                int newWidth = dataArray.getInt(0);
-//                int newHeight = dataArray.getInt(1);
-//
-//                float scale = context.getResources().getDisplayMetrics().density;
-//                int widthPx = (int) (newWidth * scale + 0.5f);
-//                int heightPx = (int) (newHeight * scale + 0.5f);
-//
-//                widget.resize(widthPx, heightPx);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } finally {
-//            function.onCallBack(null);
-//        }
-//        WidgetView.getInstance().setVisibility(View.INVISIBLE);
         WidgetView.getInstance().collapse();
         function.onCallBack(null);
     }),
 
     expand((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "expand, data: " + data);
-//        WidgetView widget = WidgetView.getInstance();
-//        widget.resize(widget.getDefaultWidth(), widget.getDefaultHeight());
-//        function.onCallBack(null);
-//        WidgetView.getInstance().setVisibility(View.VISIBLE);
         WidgetView.getInstance().expand();
         function.onCallBack(null);
     }),
@@ -143,7 +118,7 @@ public enum JS2JavaHandlers {
     private static boolean isAppAvailable(Context context, String packageName) {
         PackageManager pm = context.getPackageManager();
         try {
-            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            pm.getPackageInfo(packageName, PackageManager.GET_META_DATA);
             return true;
         } catch (PackageManager.NameNotFoundException e) {
             return false;
@@ -151,6 +126,6 @@ public enum JS2JavaHandlers {
     }
 
     private static String getTag() {
-        return JS2JavaHandlers.class.getSimpleName();
+        return "WidgetJS2Handler";
     }
 }
