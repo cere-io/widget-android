@@ -306,13 +306,7 @@ public class WidgetView {
         }
 
         bridgeWebView = new BridgeWebView(context);
-        bridgeWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
-        if (Build.VERSION.SDK_INT >= 19) {
-            bridgeWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            bridgeWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
 
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
