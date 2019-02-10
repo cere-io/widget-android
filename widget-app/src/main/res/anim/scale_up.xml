@@ -3,17 +3,17 @@
     android:interpolator="@android:anim/bounce_interpolator">
 
     <scale
-        android:duration="150"
+        android:duration="100"
         android:fromXScale="0"
         android:fromYScale="0"
         android:toXScale="100%p"
         android:toYScale="100%p" />
 
-    <translate
-        android:fromXDelta="50%p"
-        android:fromYDelta="50%p"
-        android:toXDelta="0"
-        android:toYDelta="0"
-        android:duration="150"
-        />
+    <!--<translate-->
+        <!--android:fromXDelta="50%p"-->
+        <!--android:fromYDelta="50%p"-->
+        <!--android:toXDelta="0"-->
+        <!--android:toYDelta="0"-->
+        <!--android:duration="150"-->
+        <!--/>-->
 </set>
