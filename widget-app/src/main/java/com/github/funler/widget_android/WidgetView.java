@@ -111,13 +111,11 @@ public class WidgetView {
     }
 
     public WidgetView expand() {
-        // TODO: to implement
         getContext().sendBroadcast(new Intent("maximize_widget_view"));
         return this;
     }
 
     public WidgetView restore() {
-        // TODO: to implement
         getContext().sendBroadcast(new Intent("restore_widget_view"));
         return this;
     }

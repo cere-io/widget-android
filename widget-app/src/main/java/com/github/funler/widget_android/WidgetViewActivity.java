@@ -12,6 +12,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
@@ -28,13 +29,14 @@ public class WidgetViewActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             finish();
+            overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
         }
     };
 
     private final BroadcastReceiver maximizeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            WindowManager.LayoutParams params = getWindow().getAttributes();
+            ViewGroup.LayoutParams params = bridgeWebView.getLayoutParams();
             params.height = MATCH_PARENT;
             params.width = MATCH_PARENT;
             updateLayoutParams(params);
@@ -44,7 +46,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver restoreReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            WindowManager.LayoutParams params = getWindow().getAttributes();
+            ViewGroup.LayoutParams params = bridgeWebView.getLayoutParams();
             params.height = restoreHeight;
             params.width = restoreWidth;
             updateLayoutParams(params);
@@ -54,28 +56,20 @@ public class WidgetViewActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedStateInstance) {
         super.onCreate(savedStateInstance);
+        overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
+
+        RelativeLayout root = new RelativeLayout(getBaseContext());
+        root.setLayoutParams(new RelativeLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
 
         bridgeWebView = WidgetView.getInstance().getBridgeWebView();
-        setContentView(bridgeWebView);
+        root.addView(bridgeWebView);
+
+        setContentView(root);
 
         makeFullScreenWithoutSystemUI();
+        configureInitialSize();
 
-        WindowManager wm = (WindowManager) WidgetView.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        restoreWidth = metrics.widthPixels - 60;
-        restoreHeight = metrics.heightPixels - 100;
-        params.height = restoreHeight;
-        params.width = restoreWidth;
-
-        updateLayoutParams(params);
-
-        registerReceiver(closeReceiver, new IntentFilter("close_widget_view"));
-        registerReceiver(maximizeReceiver, new IntentFilter("maximize_widget_view"));
-        registerReceiver(restoreReceiver, new IntentFilter("restore_widget_view"));
+        registerReceivers();
     }
 
     @Override
@@ -89,9 +83,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         if (bridgeWebView != null && bridgeWebView.getParent() != null) {
             ((ViewGroup) bridgeWebView.getParent()).removeView(bridgeWebView);
         }
-        unregisterReceiver(closeReceiver);
-        unregisterReceiver(maximizeReceiver);
-        unregisterReceiver(restoreReceiver);
+        unregisterReceivers();
     }
 
     private void makeFullScreenWithoutSystemUI() {
@@ -107,8 +99,35 @@ public class WidgetViewActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLayoutParams(WindowManager.LayoutParams params) {
-        getWindow().setAttributes(params);
-//        bridgeWebView.setLayoutParams(params);
+    private void registerReceivers() {
+        registerReceiver(closeReceiver, new IntentFilter("close_widget_view"));
+        registerReceiver(maximizeReceiver, new IntentFilter("maximize_widget_view"));
+        registerReceiver(restoreReceiver, new IntentFilter("restore_widget_view"));
+    }
+
+    private void unregisterReceivers() {
+        unregisterReceiver(closeReceiver);
+        unregisterReceiver(maximizeReceiver);
+        unregisterReceiver(restoreReceiver);
+    }
+
+    private void configureInitialSize() {
+        WindowManager wm = (WindowManager) WidgetView.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+        restoreWidth = metrics.widthPixels - 60;
+        restoreHeight = metrics.heightPixels - 100;
+        params.height = restoreHeight;
+        params.width = restoreWidth;
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+
+        updateLayoutParams(params);
+    }
+
+    private void updateLayoutParams(ViewGroup.LayoutParams params) {
+        bridgeWebView.setLayoutParams(params);
     }
 }
