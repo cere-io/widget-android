@@ -21,6 +21,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 public class WidgetViewActivity extends AppCompatActivity {
 
     private BridgeWebView bridgeWebView;
+    private RelativeLayout root;
 
     private int restoreWidth;
     private int restoreHeight;
@@ -36,20 +37,14 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver maximizeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ViewGroup.LayoutParams params = bridgeWebView.getLayoutParams();
-            params.height = MATCH_PARENT;
-            params.width = MATCH_PARENT;
-            updateLayoutParams(params);
+            updateLayoutParams(MATCH_PARENT, MATCH_PARENT);
         }
     };
 
     private final BroadcastReceiver restoreReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ViewGroup.LayoutParams params = bridgeWebView.getLayoutParams();
-            params.height = restoreHeight;
-            params.width = restoreWidth;
-            updateLayoutParams(params);
+            updateLayoutParams(restoreWidth, restoreHeight);
         }
     };
 
@@ -58,7 +53,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         super.onCreate(savedStateInstance);
         overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
 
-        RelativeLayout root = new RelativeLayout(getBaseContext());
+        root = new RelativeLayout(getBaseContext());
         root.setLayoutParams(new RelativeLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
 
         bridgeWebView = WidgetView.getInstance().getBridgeWebView();
@@ -80,9 +75,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (bridgeWebView != null && bridgeWebView.getParent() != null) {
-            ((ViewGroup) bridgeWebView.getParent()).removeView(bridgeWebView);
-        }
+        detachBridgeView();
         unregisterReceivers();
     }
 
@@ -117,17 +110,28 @@ public class WidgetViewActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
         restoreWidth = metrics.widthPixels - 60;
         restoreHeight = metrics.heightPixels - 100;
-        params.height = restoreHeight;
-        params.width = restoreWidth;
-        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 
-        updateLayoutParams(params);
+        updateLayoutParams(restoreWidth, restoreHeight);
     }
 
-    private void updateLayoutParams(ViewGroup.LayoutParams params) {
+    private void updateLayoutParams(int width, int height) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+        if (params == null) {
+            params = new RelativeLayout.LayoutParams(width, height);
+        } else {
+            params.width = width;
+            params.height = height;
+        }
+
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         bridgeWebView.setLayoutParams(params);
+    }
+
+    private void detachBridgeView() {
+        if (bridgeWebView != null && bridgeWebView.getParent() != null) {
+            ((ViewGroup) bridgeWebView.getParent()).removeView(bridgeWebView);
+        }
     }
 }
