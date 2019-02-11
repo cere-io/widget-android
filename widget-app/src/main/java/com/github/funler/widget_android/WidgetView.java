@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class WidgetView {
 
@@ -166,13 +163,7 @@ public class WidgetView {
                     function.onCallBack(null);
                 } else {
                     try {
-                        JSONObject jsonObject = new JSONObject(data);
-                        onSignUpHandler.handle(
-                                jsonObject.getString("email"),
-                                jsonObject.getString("token"),
-                                jsonObject.getString("password"),
-                                prepareExtras(jsonObject)
-                        );
+                        onSignUpHandler.handle(WidgetUser.fromJson(data));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } finally {
@@ -190,12 +181,7 @@ public class WidgetView {
                     function.onCallBack(null);
                 } else {
                     try {
-                        JSONObject jsonObject = new JSONObject(data);
-                        onSignInHandler.handle(
-                                jsonObject.getString("email"),
-                                jsonObject.getString("token"),
-                                prepareExtras(jsonObject)
-                        );
+                        onSignInHandler.handle(WidgetUser.fromJson(data));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } finally {
@@ -241,23 +227,6 @@ public class WidgetView {
         String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
         Log.d(TAG, jsCommand);
         bridgeWebView.loadUrl(jsCommand);
-    }
-
-    private Map<String, String> prepareExtras(JSONObject jsonObject) throws JSONException {
-        Map<String, String> extras = Collections.EMPTY_MAP;
-
-        if (jsonObject.has("extras")) {
-            JSONObject extrasJson = jsonObject.getJSONObject("extras");
-            extras = new HashMap<>();
-
-            Iterator<String> iterator = extrasJson.keys();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                extras.put(key, extrasJson.getString(key));
-            }
-        }
-
-        return extras;
     }
 
     protected void clear() {
@@ -383,11 +352,11 @@ public class WidgetView {
     }
 
     public interface OnSignInHandler {
-        void handle(String email, String token, Map<String, String> extras);
+        void handle(WidgetUser user);
     }
 
     public interface OnSignUpHandler {
-        void handle(String email, String token, String password, Map<String, String> extras);
+        void handle(WidgetUser user);
     }
 
     public interface OnGetUserByEmailHandler {
