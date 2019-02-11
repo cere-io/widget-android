@@ -39,6 +39,9 @@ public class WidgetView {
 
     private Context context;
     private BridgeWebView bridgeWebView;
+    private int restoreWidth = 0;
+    private int restoreHeight = 0;
+    private boolean isMaximized = false;
 
     private OnSignInHandler onSignInHandler = null;
     private OnSignUpHandler onSignUpHandler = null;
@@ -50,6 +53,7 @@ public class WidgetView {
     public WidgetView(Context context) {
         this.context = context;
         configureWebView();
+        INSTANCE = this;
     }
 
     public Context getContext() { return this.context; }
@@ -312,8 +316,6 @@ public class WidgetView {
     }
 
     private WidgetView load() {
-        INSTANCE = this;
-
         String jsPostfix = "/static/js/bundle.js";
 
         String html = generateHTML(this.env.sdkURL() + jsPostfix);
@@ -354,6 +356,30 @@ public class WidgetView {
             stringBuilder.append(section).append(",");
         }
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
+    }
+
+    protected int getRestoreWidth() {
+        return restoreWidth;
+    }
+
+    protected void setRestoreWidth(int restoreWidth) {
+        this.restoreWidth = restoreWidth;
+    }
+
+    protected int getRestoreHeight() {
+        return restoreHeight;
+    }
+
+    protected void setRestoreHeight(int restoreHeight) {
+        this.restoreHeight = restoreHeight;
+    }
+
+    protected boolean isMaximized() {
+        return isMaximized;
+    }
+
+    protected void setMaximized(boolean maximized) {
+        isMaximized = maximized;
     }
 
     public interface OnSignInHandler {

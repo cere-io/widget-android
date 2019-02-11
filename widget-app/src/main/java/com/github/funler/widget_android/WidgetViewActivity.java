@@ -23,9 +23,6 @@ public class WidgetViewActivity extends AppCompatActivity {
     private BridgeWebView bridgeWebView;
     private RelativeLayout root;
 
-    private int restoreWidth;
-    private int restoreHeight;
-
     private final BroadcastReceiver closeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -37,14 +34,16 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver maximizeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateLayoutParams(MATCH_PARENT, MATCH_PARENT);
+            WidgetView.getInstance().setMaximized(true);
+            maximize();
         }
     };
 
     private final BroadcastReceiver restoreReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateLayoutParams(restoreWidth, restoreHeight);
+            WidgetView.getInstance().setMaximized(false);
+            minimize();
         }
     };
 
@@ -110,10 +109,16 @@ public class WidgetViewActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
 
-        restoreWidth = metrics.widthPixels - 60;
-        restoreHeight = metrics.heightPixels - 100;
+        if (WidgetView.getInstance().getRestoreWidth() == 0) {
+            WidgetView.getInstance().setRestoreWidth(metrics.widthPixels - 60);
+            WidgetView.getInstance().setRestoreHeight(metrics.heightPixels - 100);
+        }
 
-        updateLayoutParams(restoreWidth, restoreHeight);
+        if (WidgetView.getInstance().isMaximized()) {
+            maximize();
+        } else {
+            minimize();
+        }
     }
 
     private void updateLayoutParams(int width, int height) {
@@ -133,5 +138,16 @@ public class WidgetViewActivity extends AppCompatActivity {
         if (bridgeWebView != null && bridgeWebView.getParent() != null) {
             ((ViewGroup) bridgeWebView.getParent()).removeView(bridgeWebView);
         }
+    }
+
+    private void maximize() {
+        updateLayoutParams(MATCH_PARENT, MATCH_PARENT);
+    }
+
+    private void minimize() {
+        updateLayoutParams(
+                WidgetView.getInstance().getRestoreWidth(),
+                WidgetView.getInstance().getRestoreHeight()
+        );
     }
 }
