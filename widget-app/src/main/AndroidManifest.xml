@@ -7,6 +7,15 @@
             android:name="com.github.funler.widget_android.WidgetViewActivity"
             android:theme="@style/CRBWidget">
         </activity>
+
+        <receiver android:name=".ReferrerReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

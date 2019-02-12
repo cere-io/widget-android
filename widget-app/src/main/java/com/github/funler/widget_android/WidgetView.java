@@ -25,6 +25,9 @@ import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignU
 
 public class WidgetView {
 
+    static final String KEY_STORAGE = "storage";
+    static final String KEY_REFERRER = "userId";
+
     private static String TAG = "WidgetView";
     private static WidgetView INSTANCE;
 
@@ -197,7 +200,7 @@ public class WidgetView {
     }
 
     protected void clear() {
-        SharedPreferences.Editor prefs = getContext().getSharedPreferences("storage", Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefs = getContext().getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE).edit();
         for (StorageKeys sk : StorageKeys.values()) {
             prefs.remove(sk.desc());
         }

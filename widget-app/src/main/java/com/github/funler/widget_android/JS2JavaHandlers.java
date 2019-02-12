@@ -2,6 +2,7 @@ package com.github.funler.widget_android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
@@ -11,6 +12,9 @@ import com.github.funler.jsbridge.CallBackFunction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.github.funler.widget_android.WidgetView.KEY_REFERRER;
+import static com.github.funler.widget_android.WidgetView.KEY_STORAGE;
 
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
@@ -89,6 +93,20 @@ public enum JS2JavaHandlers {
         Intent chooser = Intent.createChooser(send, "Share");
         context.startActivity(chooser);
         function.onCallBack(null);
+    }),
+
+    getReferralsInfo((Context context, String data, CallBackFunction function) -> {
+        SharedPreferences prefsReader = context.getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE);
+        String userId = prefsReader.getString(KEY_REFERRER, "");
+
+        if (!userId.isEmpty()) {
+            context.getSharedPreferences(KEY_STORAGE, Context.MODE_PRIVATE)
+                    .edit()
+                    .remove(KEY_REFERRER)
+                    .apply();
+        }
+
+        function.onCallBack(userId);
     });
 
     private BridgeHandler handler;
