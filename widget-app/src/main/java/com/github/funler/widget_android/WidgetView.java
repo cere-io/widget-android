@@ -7,9 +7,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.github.funler.jsbridge.BridgeWebView;
-import com.github.funler.jsbridge.CallBackFunction;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -18,6 +16,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onGetClaimedRewards;
+import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onGetUserByEmail;
+import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onProcessNonFungibleReward;
+import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignIn;
+import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignUp;
 
 public class WidgetView {
 
@@ -40,11 +44,11 @@ public class WidgetView {
     private int restoreHeight = 0;
     private boolean isMaximized = false;
 
-    private OnSignInHandler onSignInHandler = null;
-    private OnSignUpHandler onSignUpHandler = null;
-    private OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = null;
-    private OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = null;
-    private OnGetUserByEmailHandler onGetUserByEmailHandler = null;
+    OnSignInHandler onSignInHandler = null;
+    OnSignUpHandler onSignUpHandler = null;
+    OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = null;
+    OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = null;
+    OnGetUserByEmailHandler onGetUserByEmailHandler = null;
     private OnHideHandler onHideHandler = null;
 
     public WidgetView(Context context) {
@@ -158,68 +162,31 @@ public class WidgetView {
 
     private void registerOnSignUpHandler() {
         if (onSignUpHandler != null) {
-            bridgeWebView.registerHandler("onSignUp", (Context context, String data, CallBackFunction function) -> {
-                if (data == null || data.equals("null")) {
-                    function.onCallBack(null);
-                } else {
-                    try {
-                        onSignUpHandler.handle(WidgetUser.fromJson(data));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        function.onCallBack(null);
-                    }
-                }
-            });
+            bridgeWebView.registerHandler(onSignUp.name(), onSignUp.handler());
         }
     }
 
     private void registerOnSignInHandler() {
         if (onSignInHandler != null) {
-            bridgeWebView.registerHandler("onSignIn", (Context context, String data, CallBackFunction function) -> {
-                if (data == null || data.equals("null")) {
-                    function.onCallBack(null);
-                } else {
-                    try {
-                        onSignInHandler.handle(WidgetUser.fromJson(data));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        function.onCallBack(null);
-                    }
-                }
-            });
+            bridgeWebView.registerHandler(onSignIn.name(), onSignIn.handler());
         }
     }
 
     private void registerOnProcessNonFungibleRewardHandler() {
         if (onProcessNonFungibleRewardHandler != null) {
-            bridgeWebView.registerHandler("onProcessNonFungibleReward", (Context context, String data, CallBackFunction function) -> {
-                onProcessNonFungibleRewardHandler.handle(data);
-                function.onCallBack(null);
-            });
+            bridgeWebView.registerHandler(onProcessNonFungibleReward.name(), onProcessNonFungibleReward.handler());
         }
     }
 
     private void registerOnGetClaimedRewardsHandler() {
         if (onGetClaimedRewardsHandler != null) {
-            bridgeWebView.registerHandler("onGetClaimedRewards", (Context context, String data, CallBackFunction function) -> {
-                onGetClaimedRewardsHandler.handle(data1 -> {
-                    if (data1 == null) {
-                        function.onCallBack("[]");
-                    } else {
-                        function.onCallBack(data1);
-                    }
-                });
-            });
+            bridgeWebView.registerHandler(onGetClaimedRewards.name(), onGetClaimedRewards.handler());
         }
     }
 
     private void registerOnGetUserByEmailHandler() {
         if (onGetUserByEmailHandler != null) {
-            bridgeWebView.registerHandler("onGetUserByEmail", (Context context, String email, CallBackFunction function) -> {
-                onGetUserByEmailHandler.handle(email, exists -> function.onCallBack(exists + ""));
-            });
+            bridgeWebView.registerHandler(onGetUserByEmail.name(), onGetUserByEmail.handler());
         }
     }
 
@@ -327,27 +294,27 @@ public class WidgetView {
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
     }
 
-    protected int getRestoreWidth() {
+    int getRestoreWidth() {
         return restoreWidth;
     }
 
-    protected void setRestoreWidth(int restoreWidth) {
+    void setRestoreWidth(int restoreWidth) {
         this.restoreWidth = restoreWidth;
     }
 
-    protected int getRestoreHeight() {
+    int getRestoreHeight() {
         return restoreHeight;
     }
 
-    protected void setRestoreHeight(int restoreHeight) {
+    void setRestoreHeight(int restoreHeight) {
         this.restoreHeight = restoreHeight;
     }
 
-    protected boolean isMaximized() {
+    boolean isMaximized() {
         return isMaximized;
     }
 
-    protected void setMaximized(boolean maximized) {
+    void setMaximized(boolean maximized) {
         isMaximized = maximized;
     }
 
@@ -375,7 +342,7 @@ public class WidgetView {
         void handle(ResponseCallback callback);
 
         interface ResponseCallback {
-            void handle(String data);
+            void handle(List<ClaimedReward> claimedRewards);
         }
     }
 
@@ -396,7 +363,7 @@ public class WidgetView {
         }
     }
 
-    private enum StorageKeys {
+    enum StorageKeys {
         ACCOUNT("account"),
         PRIVATE_KEY("pk"),
         ENC_PRIVATE_KEY("enc_pk"),
