@@ -9,11 +9,8 @@ import android.util.Log;
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
@@ -55,17 +52,6 @@ public enum JS2JavaHandlers {
     initialized((Context context, String data, CallBackFunction function) -> {
         WidgetView.getInstance().setInitialized(true);
         function.onCallBack(null);
-    }),
-
-    getAppsInfo((Context context, String data, CallBackFunction function) -> {
-        List<AppInfo> appsInfo = new ApkInfoExtractor(context).getInstalledAppsInfo();
-
-        JSONArray array = new JSONArray();
-        for (AppInfo appInfo : appsInfo) {
-            array.put(appInfo.toJSON());
-        }
-
-        function.onCallBack(array.toString());
     }),
 
     shareWith((Context context, String data, CallBackFunction function) -> {
