@@ -53,7 +53,6 @@
           console.log('Check NativeStorage', nativeStorage);
 
           if (window.WebViewJavascriptBridge && nativeStorage) {
-            console.log('===========================>>>>>>>>>>>>>>>>>>>>>> BRIDGE FOUND!!!!');
             clearInterval(t);
             t = null;
 
@@ -85,7 +84,6 @@
             });
 
             window.CRBWidget.onInitialized(function() {
-              console.log('===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Widget Initialized');
               jsBridge.callHandler('initialized', {}, function(response) {});
             });
 
