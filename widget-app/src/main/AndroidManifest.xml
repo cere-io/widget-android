@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.funler.widget_android">
 
-    <application android:label="@string/app_name"/>
+    <application android:label="@string/app_name">
+        <activity
+            android:name="com.github.funler.widget_android.WidgetViewActivity"
+            android:theme="@style/CRBWidget">
+        </activity>
+    </application>
 
 </manifest>
