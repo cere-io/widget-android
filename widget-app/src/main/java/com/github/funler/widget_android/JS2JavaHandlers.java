@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.github.funler.jsbridge.BridgeHandler;
 import com.github.funler.jsbridge.CallBackFunction;
@@ -107,6 +108,11 @@ public enum JS2JavaHandlers {
         }
 
         function.onCallBack(userId);
+    }),
+
+    showNativeMessage((Context context, String data, CallBackFunction function) -> {
+        Toast.makeText(context, data, Toast.LENGTH_LONG).show();
+        function.onCallBack(null);
     });
 
     private BridgeHandler handler;
