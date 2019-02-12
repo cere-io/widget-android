@@ -57,9 +57,10 @@
             clearInterval(t);
             t = null;
 
-            var jsBridge = window.WebViewJavascriptBridge;
+            window.WebViewJavascriptBridge.isAndroid = true;
+            window.WebViewJavascriptBridge.isIOS = false;
 
-            console.log(jsBridge);
+            var jsBridge = window.WebViewJavascriptBridge;
 
             window.CRBWidget.init({
               uid: window.widget.userId,
