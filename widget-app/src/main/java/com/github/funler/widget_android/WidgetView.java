@@ -246,7 +246,7 @@ public class WidgetView {
             bridgeWebView.clearCache(false);
         }
 
-        bridgeWebView = new BridgeWebView(context);
+        bridgeWebView = new WidgetWebView(context);
         bridgeWebView.setBackgroundColor(Color.TRANSPARENT);
 
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
