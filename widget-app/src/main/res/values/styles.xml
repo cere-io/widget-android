@@ -2,9 +2,10 @@
 <resources>
     <color name="black_transparent">#99000000</color>
     <style name="CRBWidget" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:windowBackground">@color/black_transparent</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 </resources>

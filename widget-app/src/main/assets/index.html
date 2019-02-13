@@ -5,7 +5,8 @@
     <meta name="theme-color" content="#000000">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width shrink-to-fit=no">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width shrink-to-fit=no">
 
     <style>
         html, body, #root {
@@ -16,84 +17,75 @@
     </style>
 
     <script type="text/javascript">
-      window.widget = {
-        userId: '::userId::',
-        appId: '::appId::',
-        env: '::env::',
-        mode: '::mode::',
-        sections: '::sections::'.split(',')
-      };
+        document.addEventListener('WebViewJavascriptBridgeReady', function () {
+            console.log('BRIDGE LOADED!');
 
-      console.log('Widget data', window.widget);
+            window.widget = {
+                userId: '::userId::',
+                appId: '::appId::',
+                env: '::env::',
+                mode: '::mode::',
+                sections: '::sections::'.split(',')
+            };
 
-      var script = document.createElement('script');
-      script.src = '::widgetUrl::';
-      script.defer = true;
-      script.onload = function() {
+            var script = document.createElement('script');
+            script.src = '::widgetUrl::';
+            script.onload = function () {
 
-        function processPromise(data) {
-          var res = null;
+                function processPromise(data) {
+                    var res = null;
 
-          if (data) {
-            try {
-              res = JSON.parse(data);
-            } catch (e) {
-              res = data;
-            }
-          }
+                    if (data) {
+                        try {
+                            res = JSON.parse(data);
+                        } catch (e) {
+                            res = data;
+                        }
+                    }
 
-          console.log('WidgetAndroidSDK::result', res);
-          return res;
-        }
+                    return res;
+                }
 
-        var t = setInterval(function() {
+                var nativeStorage = window.NativeStorage;
 
-          console.log('Check JS Bridge', window.WebViewJavascriptBridge);
-          var nativeStorage = window.NativeStorage;
-          console.log('Check NativeStorage', nativeStorage);
+                window.WebViewJavascriptBridge.isAndroid = true;
+                window.WebViewJavascriptBridge.isIOS = false;
 
-          if (window.WebViewJavascriptBridge && nativeStorage) {
-            clearInterval(t);
-            t = null;
+                var jsBridge = window.WebViewJavascriptBridge;
 
-            window.WebViewJavascriptBridge.isAndroid = true;
-            window.WebViewJavascriptBridge.isIOS = false;
+                window.CRBWidget.init({
+                    uid: window.widget.userId,
+                    appId: window.widget.appId,
+                    env: window.widget.env,
+                    sections: window.widget.sections,
+                    mode: window.widget.mode,
+                    width: '100%',
+                    height: '100%',
+                    styles: {
+                        top: 0,
+                        left: 0,
+                    },
+                    setStorageItem: function (key, value) {
+                        return nativeStorage.setItem(key, value)
+                            .then(processPromise);
+                    },
+                    getStorageItem: function (key) {
+                        return nativeStorage.getItem(key)
+                            .then(processPromise);
+                    }
+                });
 
-            var jsBridge = window.WebViewJavascriptBridge;
+                window.CRBWidget.onInitialized(function () {
+                    jsBridge.callHandler('initialized', {}, function (response) {
+                    });
+                });
 
-            window.CRBWidget.init({
-              uid: window.widget.userId,
-              appId: window.widget.appId,
-              env: window.widget.env,
-              sections: window.widget.sections,
-              mode: window.widget.mode,
-              width: '100%',
-              height: '100%',
-              styles: {
-                top: 0,
-                left: 0,
-              },
-              setStorageItem: function (key, value) {
-                return nativeStorage.setItem(key, value)
-                  .then(processPromise);
-              },
-              getStorageItem: function (key) {
-                return nativeStorage.getItem(key)
-                  .then(processPromise);
-              }
-            });
+                window.CRBWidget.expand();
+            };
 
-            window.CRBWidget.onInitialized(function() {
-              jsBridge.callHandler('initialized', {}, function(response) {});
-            });
-
-            window.CRBWidget.expand();
-          }
-        }, 1000);
-      };
-
-      var firstScript = document.getElementsByTagName('script')[0];
-      firstScript.parentNode.insertBefore(script, firstScript);
+            var firstScript = document.getElementsByTagName('script')[0];
+            firstScript.parentNode.insertBefore(script, firstScript);
+        }, false);
     </script>
 </head>
 <body>
