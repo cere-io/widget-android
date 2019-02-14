@@ -100,6 +100,7 @@ public class WidgetView {
     public WidgetView show() {
         Intent intent = new Intent(getContext(), WidgetViewActivity.class);
         getContext().startActivity(intent);
+        callWidgetJavascript("__showOnNative", null);
         return this;
     }
 
