@@ -113,6 +113,16 @@ public enum JS2JavaHandlers {
     showNativeMessage((Context context, String data, CallBackFunction function) -> {
         Toast.makeText(context, data, Toast.LENGTH_LONG).show();
         function.onCallBack(null);
+    }),
+
+    inputFocused((Context context, String data, CallBackFunction function) -> {
+        WidgetView.getInstance().inputFocused(Float.parseFloat(data));
+        function.onCallBack(null);
+    }),
+
+    inputBlurred((Context context, String data, CallBackFunction function) -> {
+        WidgetView.getInstance().inputBlurred();
+        function.onCallBack(null);
     });
 
     private BridgeHandler handler;

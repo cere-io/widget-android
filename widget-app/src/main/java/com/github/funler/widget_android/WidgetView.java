@@ -22,6 +22,11 @@ import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onGetUs
 import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onProcessNonFungibleReward;
 import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignIn;
 import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignUp;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
 
 public class WidgetView {
 
@@ -109,7 +114,7 @@ public class WidgetView {
             onHideHandler.handle();
         }
 
-        getContext().sendBroadcast(new Intent("close_widget_view"));
+        getContext().sendBroadcast(new Intent(close_widget_view.name()));
 
         return this;
     }
@@ -120,12 +125,12 @@ public class WidgetView {
     }
 
     public WidgetView expand() {
-        getContext().sendBroadcast(new Intent("maximize_widget_view"));
+        getContext().sendBroadcast(new Intent(maximize_widget_view.name()));
         return this;
     }
 
     public WidgetView restore() {
-        getContext().sendBroadcast(new Intent("restore_widget_view"));
+        getContext().sendBroadcast(new Intent(restore_widget_view.name()));
         return this;
     }
 
@@ -320,6 +325,16 @@ public class WidgetView {
 
     void setMaximized(boolean maximized) {
         isMaximized = maximized;
+    }
+
+    void inputFocused(float y) {
+        Intent i = new Intent(input_focused.name());
+        i.putExtra("y", y);
+        getContext().sendBroadcast(i);
+    }
+
+    void inputBlurred() {
+        getContext().sendBroadcast(new Intent(input_blurred.name()));
     }
 
     public interface OnSignInHandler {

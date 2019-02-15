@@ -17,6 +17,11 @@ import android.widget.RelativeLayout;
 import com.github.funler.jsbridge.BridgeWebView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
 
 public class WidgetViewActivity extends AppCompatActivity {
 
@@ -44,6 +49,30 @@ public class WidgetViewActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             WidgetView.getInstance().setMaximized(false);
             minimize();
+        }
+    };
+
+    private final BroadcastReceiver focusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            float y = intent.getExtras().getFloat("y") * 2;
+
+            int windowHeight = getWindow().getDecorView().getHeight();
+            int webViewHeight = bridgeWebView.getHeight();
+            int margin = windowHeight - webViewHeight;
+            float visibleHeight = (webViewHeight / 3) - (margin / 2);
+
+            if (y > visibleHeight) {
+                float newY = visibleHeight - y;
+                bridgeWebView.animate().translationY(newY).start();
+            }
+        }
+    };
+
+    private final BroadcastReceiver blurReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            bridgeWebView.animate().translationY(0).start();
         }
     };
 
@@ -92,15 +121,19 @@ public class WidgetViewActivity extends AppCompatActivity {
     }
 
     private void registerReceivers() {
-        registerReceiver(closeReceiver, new IntentFilter("close_widget_view"));
-        registerReceiver(maximizeReceiver, new IntentFilter("maximize_widget_view"));
-        registerReceiver(restoreReceiver, new IntentFilter("restore_widget_view"));
+        registerReceiver(closeReceiver, new IntentFilter(close_widget_view.name()));
+        registerReceiver(maximizeReceiver, new IntentFilter(maximize_widget_view.name()));
+        registerReceiver(restoreReceiver, new IntentFilter(restore_widget_view.name()));
+        registerReceiver(focusReceiver, new IntentFilter(input_focused.name()));
+        registerReceiver(blurReceiver, new IntentFilter(input_blurred.name()));
     }
 
     private void unregisterReceivers() {
         unregisterReceiver(closeReceiver);
         unregisterReceiver(maximizeReceiver);
         unregisterReceiver(restoreReceiver);
+        unregisterReceiver(focusReceiver);
+        unregisterReceiver(blurReceiver);
     }
 
     private void configureInitialSize() {
@@ -149,5 +182,13 @@ public class WidgetViewActivity extends AppCompatActivity {
                 WidgetView.getInstance().getRestoreWidth(),
                 WidgetView.getInstance().getRestoreHeight()
         );
+    }
+
+    enum ActivityEvents {
+        close_widget_view,
+        maximize_widget_view,
+        restore_widget_view,
+        input_focused,
+        input_blurred
     }
 }
