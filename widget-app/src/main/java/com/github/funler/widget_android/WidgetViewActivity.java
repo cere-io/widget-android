@@ -57,10 +57,10 @@ public class WidgetViewActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             float y = intent.getExtras().getFloat("y") * 2;
 
-            int windowHeight = getWindow().getDecorView().getHeight();
+//            int windowHeight = getWindow().getDecorView().getHeight();
             int webViewHeight = bridgeWebView.getHeight();
-            int margin = windowHeight - webViewHeight;
-            float visibleHeight = (webViewHeight / 3) - (margin / 2);
+//            int margin = windowHeight - webViewHeight;
+            float visibleHeight = (webViewHeight / 4) - 150;
 
             if (y > visibleHeight) {
                 float newY = visibleHeight - y;
