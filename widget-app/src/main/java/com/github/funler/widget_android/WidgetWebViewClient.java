@@ -21,11 +21,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 class WidgetWebViewClient extends BridgeWebViewClient {
 
     private final String TAG = "WidgetWebViewClient";
     private BridgeWebView bridgeWebView;
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public WidgetWebViewClient(BridgeWebView webView) {
         super(webView);
@@ -68,10 +71,10 @@ class WidgetWebViewClient extends BridgeWebViewClient {
                     } else {
                         saveTextFile(urlLower, fileName);
                     }
+                } else {
+                    Log.d(TAG, "Read file from internal storage " + fileName);
+                    response = generateWebResourceResponse(Cacheable.valueOf(ext).mimeType(), "utf-8", bridgeWebView.getContext().openFileInput(fileName));
                 }
-
-                Log.d(TAG, "Read file from internal storage " + fileName);
-                response = generateWebResourceResponse(Cacheable.valueOf(ext).mimeType(), "utf-8", bridgeWebView.getContext().openFileInput(fileName));
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
             }
@@ -109,35 +112,47 @@ class WidgetWebViewClient extends BridgeWebViewClient {
                 Cacheable.png.name().equals(ext);
     }
 
-    private void saveTextFile(String url, String fileName) throws IOException {
-        Log.d(TAG, "Save file to internal storage " + fileName);
-        FileOutputStream fos = bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+    private void saveTextFile(String url, String fileName) {
+        executorService.execute(() -> {
+            try {
+                Log.d(TAG, "Save file to internal storage " + fileName);
+                FileOutputStream fos = bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
 
-        URL urlObj = new URL(url);
-        URLConnection urlConnection = urlObj.openConnection();
-        InputStream is = urlConnection.getInputStream();
+                URL urlObj = new URL(url);
+                URLConnection urlConnection = urlObj.openConnection();
+                InputStream is = urlConnection.getInputStream();
 
-        int data;
-        while ((data = is.read()) != -1) {
-            fos.write(data);
-        }
+                int data;
+                while ((data = is.read()) != -1) {
+                    fos.write(data);
+                }
 
-        is.close();
-        fos.close();
+                is.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    private void saveImageFile(String url, String fileName, Bitmap.CompressFormat compressFormat) throws IOException {
-        Log.d(TAG, "Save file to internal storage " + fileName);
-        FileOutputStream fos = bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+    private void saveImageFile(String url, String fileName, Bitmap.CompressFormat compressFormat) {
+        executorService.execute(() -> {
+            try {
+                Log.d(TAG, "Save file to internal storage " + fileName);
+                FileOutputStream fos = bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
 
-        URL urlObj = new URL(url);
-        URLConnection urlConnection = urlObj.openConnection();
-        InputStream is = urlConnection.getInputStream();
-        Bitmap image = BitmapFactory.decodeStream(is);
-        image.compress(compressFormat, 100, fos);
+                URL urlObj = new URL(url);
+                URLConnection urlConnection = urlObj.openConnection();
+                InputStream is = urlConnection.getInputStream();
+                Bitmap image = BitmapFactory.decodeStream(is);
+                image.compress(compressFormat, 100, fos);
 
-        is.close();
-        fos.close();
+                is.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private WebResourceResponse generateWebResourceResponse(String mimeType, String encoding, InputStream inputStream) {
