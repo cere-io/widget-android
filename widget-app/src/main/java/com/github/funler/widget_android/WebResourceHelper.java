@@ -119,7 +119,7 @@ class WebResourceHelper {
     private static void clean(String fileName, Context context) {
         File f = new File(context.getFilesDir(), fileName);
         if (f.exists()) {
-            Log.d(TAG, "Error occurred, will remove corrupted file");
+            Log.e(TAG, "Error occurred, will remove corrupted file " + fileName);
             f.delete();
         }
     }
@@ -129,7 +129,9 @@ class WebResourceHelper {
         png("image/png"),
         jpg("image/jpeg"),
         css("text/css"),
-        svg("image/svg+xml");
+        svg("image/svg+xml"),
+        woff("application/font-woff"),
+        woff2("application/font-woff2");
 
         private String mimeType;
 
