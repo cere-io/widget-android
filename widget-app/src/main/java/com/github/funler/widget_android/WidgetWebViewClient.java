@@ -49,9 +49,9 @@ class WidgetWebViewClient extends BridgeWebViewClient {
                 File file = new File(bridgeWebView.getContext().getFilesDir(), fileName);
                 if (!file.exists()) {
                     if (WebResourceHelper.isImage(ext)) {
-                        WebResourceHelper.saveImageFile(urlLower, fileName, bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE));
+                        WebResourceHelper.saveImageFile(urlLower, fileName, bridgeWebView.getContext());
                     } else {
-                        WebResourceHelper.saveTextFile(urlLower, fileName, bridgeWebView.getContext().openFileOutput(fileName, Context.MODE_PRIVATE));
+                        WebResourceHelper.saveTextFile(urlLower, fileName, bridgeWebView.getContext());
                     }
                 } else {
                     Log.d(TAG, "Read file from internal storage " + fileName);

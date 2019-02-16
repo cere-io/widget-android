@@ -97,7 +97,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // do nothing
+        WidgetView.getInstance().inputBlurred();
     }
 
     @Override

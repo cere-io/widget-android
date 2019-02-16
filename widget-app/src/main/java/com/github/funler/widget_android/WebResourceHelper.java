@@ -1,16 +1,20 @@
 package com.github.funler.widget_android;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 import android.webkit.WebResourceResponse;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +23,7 @@ import java.util.concurrent.Executors;
 class WebResourceHelper {
 
     private static final String TAG = "WebResourceHelper";
-    private static ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private static ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     public static boolean isCacheable(String url) {
         return isInCacheableEnum(url) && notExcluded(url);
@@ -60,38 +64,32 @@ class WebResourceHelper {
         return Cacheable.js.name().equals(ext);
     }
 
-    public static void saveTextFile(String url, String fileName, FileOutputStream fos) {
+    public static void saveTextFile(String url, String fileName, Context context) {
         executorService.execute(() -> {
-            try {
+            try (
+                    ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream());
+                    FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+                    FileChannel fileChannel = fos.getChannel()
+            ) {
                 Log.d(TAG, "Save file to internal storage " + fileName);
 
-                URL urlObj = new URL(url);
-                URLConnection urlConnection = urlObj.openConnection();
-                InputStream is = urlConnection.getInputStream();
+                fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
 
-                int data;
-                while ((data = is.read()) != -1) {
-                    fos.write(data);
-                }
-
-                is.close();
-                fos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
+                clean(fileName, context);
             }
         });
 
     }
 
-    public static void saveImageFile(String url, String fileName, FileOutputStream fos) {
+    public static void saveImageFile(String url, String fileName, Context context) {
         executorService.execute(() -> {
-            try {
+            try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE)) {
                 Log.d(TAG, "Save file to internal storage " + fileName);
 
                 URL urlObj = new URL(url);
-                URLConnection urlConnection = urlObj.openConnection();
-                InputStream is = urlConnection.getInputStream();
-                Bitmap image = BitmapFactory.decodeStream(is);
+                Bitmap image = BitmapFactory.decodeStream(urlObj.openStream());
 
                 Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.PNG;
                 if (getExt(fileName).equals(Cacheable.jpg.name())) {
@@ -99,14 +97,11 @@ class WebResourceHelper {
                 }
 
                 image.compress(compressFormat, 100, fos);
-
-                is.close();
-                fos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
+                clean(fileName, context);
             }
         });
-
     }
 
     public static WebResourceResponse generateWebResourceResponse(String ext, String encoding, InputStream inputStream) {
@@ -119,6 +114,14 @@ class WebResourceHelper {
         }
 
         return new WebResourceResponse(Cacheable.valueOf(ext).mimeType(), encoding, inputStream);
+    }
+
+    private static void clean(String fileName, Context context) {
+        File f = new File(context.getFilesDir(), fileName);
+        if (f.exists()) {
+            Log.d(TAG, "Error occurred, will remove corrupted file");
+            f.delete();
+        }
     }
 
     private enum Cacheable {
