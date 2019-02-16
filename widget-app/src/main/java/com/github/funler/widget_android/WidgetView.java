@@ -23,6 +23,7 @@ import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onProce
 import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignIn;
 import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignUp;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
@@ -221,9 +222,12 @@ public class WidgetView {
         return bridgeWebView;
     }
 
+    protected boolean isInitialized() { return initialized; }
+
     protected void setInitialized(boolean initialized) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
+            getContext().sendBroadcast(new Intent(initialized_widget_view.name()));
 
             if (this.initialized) {
                 while (!java2JSHandlers.isEmpty()) {

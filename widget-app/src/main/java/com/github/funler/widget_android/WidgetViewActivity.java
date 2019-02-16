@@ -12,12 +12,14 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
+import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
@@ -76,18 +78,27 @@ public class WidgetViewActivity extends AppCompatActivity {
         }
     };
 
+    private final BroadcastReceiver initReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ImageView imageView = findViewById(R.id.cere_logo_image);
+            root.removeView(imageView);
+            root.addView(bridgeWebView);
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedStateInstance) {
         super.onCreate(savedStateInstance);
         overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
+        setContentView(R.layout.activity_widget_view);
 
-        root = new RelativeLayout(getBaseContext());
-        root.setLayoutParams(new RelativeLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        root = findViewById(R.id.root);
 
-        bridgeWebView = WidgetView.getInstance().getBridgeWebView();
-        root.addView(bridgeWebView);
-
-        setContentView(root);
+        if (WidgetView.getInstance().isInitialized()) {
+            bridgeWebView = WidgetView.getInstance().getBridgeWebView();
+            root.addView(bridgeWebView);
+        }
 
         makeFullScreenWithoutSystemUI();
         configureInitialSize();
@@ -126,6 +137,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         registerReceiver(restoreReceiver, new IntentFilter(restore_widget_view.name()));
         registerReceiver(focusReceiver, new IntentFilter(input_focused.name()));
         registerReceiver(blurReceiver, new IntentFilter(input_blurred.name()));
+        registerReceiver(initReceiver, new IntentFilter(initialized_widget_view.name()));
     }
 
     private void unregisterReceivers() {
@@ -134,6 +146,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         unregisterReceiver(restoreReceiver);
         unregisterReceiver(focusReceiver);
         unregisterReceiver(blurReceiver);
+        unregisterReceiver(initReceiver);
     }
 
     private void configureInitialSize() {
@@ -189,6 +202,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         maximize_widget_view,
         restore_widget_view,
         input_focused,
-        input_blurred
+        input_blurred,
+        initialized_widget_view
     }
 }
