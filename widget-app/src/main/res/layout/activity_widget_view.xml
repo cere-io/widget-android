@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark">
 
     <ImageView
         android:id="@+id/cere_logo_image"
@@ -10,5 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/crb_logo_cutted"/>
+        android:src="@drawable/crb_logo_cutted"
+        android:visibility="gone"/>
 </RelativeLayout>

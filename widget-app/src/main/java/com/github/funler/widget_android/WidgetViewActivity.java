@@ -82,7 +82,7 @@ public class WidgetViewActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             ImageView imageView = findViewById(R.id.cere_logo_image);
-            root.removeView(imageView);
+            imageView.setVisibility(View.GONE);
             root.addView(bridgeWebView);
         }
     };
@@ -98,6 +98,9 @@ public class WidgetViewActivity extends AppCompatActivity {
         if (WidgetView.getInstance().isInitialized()) {
             bridgeWebView = WidgetView.getInstance().getBridgeWebView();
             root.addView(bridgeWebView);
+        } else {
+            ImageView imageView = findViewById(R.id.cere_logo_image);
+            imageView.setVisibility(View.VISIBLE);
         }
 
         makeFullScreenWithoutSystemUI();
