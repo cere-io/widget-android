@@ -12,6 +12,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -98,6 +99,12 @@ public class WidgetViewActivity extends AppCompatActivity {
         if (WidgetView.getInstance().isInitialized()) {
             bridgeWebView = WidgetView.getInstance().getBridgeWebView();
             root.addView(bridgeWebView);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            params.width = MATCH_PARENT;
+            params.height = MATCH_PARENT;
+            bridgeWebView.setLayoutParams(params);
         } else {
             ImageView imageView = findViewById(R.id.cere_logo_image);
             imageView.setVisibility(View.VISIBLE);
@@ -171,16 +178,15 @@ public class WidgetViewActivity extends AppCompatActivity {
     }
 
     private void updateLayoutParams(int width, int height) {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) root.getLayoutParams();
         if (params == null) {
-            params = new RelativeLayout.LayoutParams(width, height);
+            params = new FrameLayout.LayoutParams(width, height);
         } else {
             params.width = width;
             params.height = height;
         }
 
-        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        bridgeWebView.setLayoutParams(params);
+        root.setLayoutParams(params);
     }
 
     private void detachBridgeView() {
