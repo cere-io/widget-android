@@ -82,9 +82,11 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver initReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ImageView imageView = findViewById(R.id.cere_logo_image);
-            imageView.setVisibility(View.GONE);
-            root.addView(bridgeWebView);
+            runOnUiThread(() -> {
+                ImageView imageView = findViewById(R.id.cere_logo_image);
+                root.removeView(imageView);
+                root.addView(bridgeWebView);
+            });
         }
     };
 
