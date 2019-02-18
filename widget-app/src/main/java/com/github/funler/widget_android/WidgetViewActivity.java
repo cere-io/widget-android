@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -187,6 +188,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     private void attachBridgetView() {
         root.addView(bridgeWebView);
+        root.setBackground(ContextCompat.getDrawable(bridgeWebView.getContext(), R.color.transparent));
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         params.width = MATCH_PARENT;
