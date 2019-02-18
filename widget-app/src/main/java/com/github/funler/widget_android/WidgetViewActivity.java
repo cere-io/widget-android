@@ -85,7 +85,7 @@ public class WidgetViewActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 ImageView imageView = findViewById(R.id.cere_logo_image);
                 root.removeView(imageView);
-                root.addView(bridgeWebView);
+                attachBridgetView();
             });
         }
     };
@@ -97,16 +97,10 @@ public class WidgetViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_widget_view);
 
         root = findViewById(R.id.root);
+        bridgeWebView = WidgetView.getInstance().getBridgeWebView();
 
         if (WidgetView.getInstance().isInitialized()) {
-            bridgeWebView = WidgetView.getInstance().getBridgeWebView();
-            root.addView(bridgeWebView);
-
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
-            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            params.width = MATCH_PARENT;
-            params.height = MATCH_PARENT;
-            bridgeWebView.setLayoutParams(params);
+            attachBridgetView();
         } else {
             ImageView imageView = findViewById(R.id.cere_logo_image);
             imageView.setVisibility(View.VISIBLE);
@@ -189,6 +183,15 @@ public class WidgetViewActivity extends AppCompatActivity {
         }
 
         root.setLayoutParams(params);
+    }
+
+    private void attachBridgetView() {
+        root.addView(bridgeWebView);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        params.width = MATCH_PARENT;
+        params.height = MATCH_PARENT;
+        bridgeWebView.setLayoutParams(params);
     }
 
     private void detachBridgeView() {
