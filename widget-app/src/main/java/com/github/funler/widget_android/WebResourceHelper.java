@@ -12,9 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +20,7 @@ import java.util.concurrent.Executors;
 class WebResourceHelper {
 
     private static final String TAG = "WebResourceHelper";
-    private static ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private static ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public static boolean isCacheable(String url) {
         return isInCacheableEnum(url) && notExcluded(url);
@@ -67,13 +64,15 @@ class WebResourceHelper {
     public static void saveTextFile(String url, String fileName, Context context) {
         executorService.execute(() -> {
             try (
-                    ReadableByteChannel channel = Channels.newChannel(new URL(url).openStream());
-                    FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-                    FileChannel fileChannel = fos.getChannel()
+                    InputStream is = new URL(url).openStream();
+                    FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE)
             ) {
-                Log.d(TAG, "Save file to internal storage " + fileName);
 
-                fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
+                byte[] buffer = new byte[8 * 1024];
+                int bytesRead;
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
 
                 createLoadedFile(fileName, context);
             } catch (IOException e) {
