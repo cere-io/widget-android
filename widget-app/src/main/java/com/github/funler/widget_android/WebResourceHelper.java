@@ -75,6 +75,7 @@ class WebResourceHelper {
 
                 fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
 
+                createLoadedFile(fileName, context);
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
                 clean(fileName, context);
@@ -97,6 +98,8 @@ class WebResourceHelper {
                 }
 
                 image.compress(compressFormat, 100, fos);
+
+                createLoadedFile(fileName, context);
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
                 clean(fileName, context);
@@ -114,6 +117,15 @@ class WebResourceHelper {
         }
 
         return new WebResourceResponse(Cacheable.valueOf(ext).mimeType(), encoding, inputStream);
+    }
+
+    private static boolean createLoadedFile(String fileName, Context context) throws IOException {
+        File file = new File(context.getFilesDir(), fileName + ".loaded");
+        if (!file.exists()) {
+            return file.createNewFile();
+        }
+
+        return false;
     }
 
     private static void clean(String fileName, Context context) {

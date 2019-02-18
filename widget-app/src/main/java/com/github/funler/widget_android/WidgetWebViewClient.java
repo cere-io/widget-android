@@ -46,7 +46,7 @@ class WidgetWebViewClient extends BridgeWebViewClient {
                 String fileName =  WebResourceHelper.getFileName(urlLower);
                 String ext = getExt(fileName);
 
-                File file = new File(bridgeWebView.getContext().getFilesDir(), fileName);
+                File file = new File(bridgeWebView.getContext().getFilesDir(), fileName + ".loaded");
                 if (!file.exists()) {
                     if (WebResourceHelper.isImage(ext)) {
                         WebResourceHelper.saveImageFile(urlLower, fileName, bridgeWebView.getContext());
