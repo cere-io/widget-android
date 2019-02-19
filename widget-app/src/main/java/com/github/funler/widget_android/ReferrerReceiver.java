@@ -19,18 +19,18 @@ public class ReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent == null) {
-            Log.e("ReferrerReceiver", "Intent is null");
+            Log.e(TAG, "Intent is null");
             return;
         }
 
         if (!ACTION_INSTALL_REFERRER.equals(intent.getAction())) {
-            Log.e("ReferrerReceiver", "Wrong action! Expected: " + ACTION_INSTALL_REFERRER + " but was: " + intent.getAction());
+            Log.e(TAG, "Wrong action! Expected: " + ACTION_INSTALL_REFERRER + " but was: " + intent.getAction());
             return;
         }
 
         Bundle extras = intent.getExtras();
         if (intent.getExtras() == null) {
-            Log.e("ReferrerReceiver", "No data in intent");
+            Log.e(TAG, "No data in intent");
             return;
         }
 
