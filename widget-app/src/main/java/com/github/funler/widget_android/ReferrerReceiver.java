@@ -18,8 +18,6 @@ public class ReferrerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "HELLO", Toast.LENGTH_LONG).show();
-
         if (intent == null) {
             Log.e(TAG, "Intent is null");
             return;

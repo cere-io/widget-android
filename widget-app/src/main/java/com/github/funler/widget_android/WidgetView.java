@@ -32,7 +32,7 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
 public class WidgetView {
 
     static final String KEY_STORAGE = "storage";
-    static final String KEY_REFERRER = "userId";
+    static final String KEY_REFERRER = "referrer";
 
     private static String TAG = "WidgetView";
     private static WidgetView INSTANCE;
