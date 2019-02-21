@@ -109,8 +109,8 @@ public class WidgetViewActivity extends AppCompatActivity {
             ImageView cereLogoBg1 = findViewById(R.id.cere_logo_bg);
             ImageView cereLogoBg2 = findViewById(R.id.cere_logo_bg_2);
 
-            cereLogoBg1.animate().translationY(50).setDuration(5000).start();
-            cereLogoBg2.animate().translationY(-50).setDuration(5000).start();
+            cereLogoBg1.animate().translationY(50).setDuration(7500).start();
+            cereLogoBg2.animate().translationY(-50).setDuration(7500).start();
         }
 
         makeFullScreenWithoutSystemUI();
