@@ -31,31 +31,18 @@ Then rebuild your project.
 
 ## Usage
 
-You can embed **WidgetView** component into your activity markup. Something like:
-```xml
-<RelativeLayout>
- <com.github.funler.widget_android.WidgetView
-        android:id="@+id/widget_view"
-        android:layout_width="300dp"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        android:background="@android:color/transparent"/>
-</RelativeLayout>
-```
-After that in your java code you need to initialize widget and provide some required params. 
-Declare **WidgetView** in you activity:
+Firstly you need init it:
 ```java
-public class SomeActivity {
-  private WidgetView widgetView;
-}
+  List<String> sections = new ArrayList<>();
+  sections.add("secion_1");
+  sections.add("secion_2");
+  sections.add("secion_3");
+
+  WidgetView widgetView = new WidgetView(context);
+  widgetView.init("YOUR_APP_ID", "YOUR_USER_ID", sections);
 ```
-Then init it:
+
+Then you can simply call somewhere in your code:
 ```java
-  widgetView = (WidgetView) findViewById(R.id.widget_view);
-  widgetView
-    .setAppId("YOUR_APP_ID")
-    .setUserId("YOUR_USER_ID")
-    .setSections(SECTIONS_ARRAY)
-    .load();
+  widgetView.show();
 ```
