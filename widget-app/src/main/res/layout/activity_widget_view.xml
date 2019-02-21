@@ -3,16 +3,42 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light"
     android:layout_gravity="center">
 
-    <ImageView
-        android:id="@+id/cere_logo_image"
-        android:contentDescription="@string/cere_logo_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/crb_logo_title"
-        android:tint="@color/black"
-        android:visibility="invisible"/>
+    <RelativeLayout
+        android:id="@+id/cere_logo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/cere_logo_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-60dp"
+            android:contentDescription="@string/cere_logo_bg"
+            android:scaleType="fitStart"
+            android:src="@drawable/logo_bg" />
+
+        <ImageView
+            android:id="@+id/cere_logo_image"
+            android:contentDescription="@string/cere_logo_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/crb_logo_title"
+            android:tint="@color/black"/>
+
+        <ImageView
+            android:id="@+id/cere_logo_bg_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-60dp"
+            android:contentDescription="@string/cere_logo_bg"
+            android:rotation="180"
+            android:scaleType="fitStart"
+            android:src="@drawable/logo_bg" />
+    </RelativeLayout>
+
 </RelativeLayout>

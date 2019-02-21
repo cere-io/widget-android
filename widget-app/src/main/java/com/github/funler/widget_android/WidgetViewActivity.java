@@ -84,8 +84,8 @@ public class WidgetViewActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(() -> {
-                ImageView imageView = findViewById(R.id.cere_logo_image);
-                root.removeView(imageView);
+                RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
+                root.removeView(cereLogoLayout);
                 attachBridgetView();
             });
         }
@@ -103,8 +103,14 @@ public class WidgetViewActivity extends AppCompatActivity {
         if (WidgetView.getInstance().isInitialized()) {
             attachBridgetView();
         } else {
-            ImageView imageView = findViewById(R.id.cere_logo_image);
-            imageView.setVisibility(View.VISIBLE);
+            RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
+            cereLogoLayout.setVisibility(View.VISIBLE);
+
+            ImageView cereLogoBg1 = findViewById(R.id.cere_logo_bg);
+            ImageView cereLogoBg2 = findViewById(R.id.cere_logo_bg_2);
+
+            cereLogoBg1.animate().translationY(50).setDuration(5000).start();
+            cereLogoBg2.animate().translationY(-50).setDuration(5000).start();
         }
 
         makeFullScreenWithoutSystemUI();
@@ -188,7 +194,6 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     private void attachBridgetView() {
         root.addView(bridgeWebView);
-        root.setBackground(ContextCompat.getDrawable(bridgeWebView.getContext(), R.color.transparent));
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         params.width = MATCH_PARENT;

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">widget-android</string>
     <string name="cere_logo_image">Cerebellum logo</string>
+    <string name="cere_logo_bg">Cerebellum logo background</string>
 </resources>
