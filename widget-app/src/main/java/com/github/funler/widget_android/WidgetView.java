@@ -58,6 +58,8 @@ public class WidgetView {
     OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = null;
     OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = null;
     OnGetUserByEmailHandler onGetUserByEmailHandler = null;
+    OnInitializationHandler onInitializationHandler = null;
+
     private OnHideHandler onHideHandler = null;
 
     public WidgetView(Context context) {
@@ -170,6 +172,11 @@ public class WidgetView {
         return this;
     }
 
+    public WidgetView onInitializationFinished(OnInitializationHandler handler) {
+        onInitializationHandler = handler;
+        return this;
+    }
+
     private void registerOnSignUpHandler() {
         if (onSignUpHandler != null) {
             bridgeWebView.registerHandler(onSignUp.name(), onSignUp.handler());
@@ -233,6 +240,10 @@ public class WidgetView {
                 while (!java2JSHandlers.isEmpty()) {
                     Log.d(TAG, "Will process handler queue");
                     java2JSHandlers.remove(0).handle();
+                }
+
+                if (onInitializationHandler != null) {
+                    onInitializationHandler.handle();
                 }
             }
         }
@@ -370,6 +381,10 @@ public class WidgetView {
     }
 
     public interface OnHideHandler {
+        void handle();
+    }
+
+    public interface OnInitializationHandler {
         void handle();
     }
 
