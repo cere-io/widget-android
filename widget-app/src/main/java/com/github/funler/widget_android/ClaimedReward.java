@@ -13,6 +13,7 @@ public class ClaimedReward {
     private String title;
     private String img;
     private String price;
+    private String redemptionInstructions;
     private List<String> additionalInfo = Collections.EMPTY_LIST;
 
     public String getTitle() {
@@ -42,6 +43,13 @@ public class ClaimedReward {
         return this;
     }
 
+    public String getRedemptionInstructions() { return this.redemptionInstructions; }
+
+    public ClaimedReward setRedemptionInstructions(String text) {
+        this.redemptionInstructions = text;
+        return this;
+    }
+
     public List<String> getAdditionalInfo() {
         return additionalInfo;
     }
@@ -59,6 +67,7 @@ public class ClaimedReward {
             json.put("title", getTitle());
             json.put("img", getImg());
             json.put("price", getPrice());
+            json.put("redemptionInstructions", getRedemptionInstructions());
             for (String info : getAdditionalInfo()) {
                 jsonArray.put(info);
             }
@@ -77,6 +86,10 @@ public class ClaimedReward {
         reward.setTitle(json.getString("title"));
         reward.setImg(json.getString("img"));
         reward.setPrice(json.getString("price"));
+
+        if (json.has("redemptionInstructions")) {
+            reward.setRedemptionInstructions(json.getString("redemptionInstructions"));
+        }
 
         JSONArray jsonArray = new JSONArray();
         if (json.has("additionalInfo")) {
