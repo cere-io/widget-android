@@ -231,7 +231,7 @@ public class WidgetView {
 
     protected boolean isInitialized() { return initialized; }
 
-    protected void setInitialized(boolean initialized) {
+    protected void setInitialized(boolean initialized, boolean hasItems) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
             getContext().sendBroadcast(new Intent(initialized_widget_view.name()));
@@ -243,7 +243,7 @@ public class WidgetView {
                 }
 
                 if (onInitializationHandler != null) {
-                    onInitializationHandler.handle();
+                    onInitializationHandler.handle(hasItems);
                 }
             }
         }
@@ -385,7 +385,7 @@ public class WidgetView {
     }
 
     public interface OnInitializationHandler {
-        void handle();
+        void handle(boolean hasItems);
     }
 
     private interface Java2JSHandler {

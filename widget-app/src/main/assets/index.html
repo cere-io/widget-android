@@ -75,8 +75,8 @@
                     }
                 });
 
-                window.CRBWidget.onInitialized(function () {
-                    jsBridge.callHandler('initialized', {}, function (response) {});
+                window.CRBWidget.onInitialized(function (hasItems) {
+                    jsBridge.callHandler('initialized', hasItems, function (response) {});
                 });
 
                 window.CRBWidget.expand();
