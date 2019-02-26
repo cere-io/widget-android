@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
+//import android.widget.Toast;
 
 import static com.github.funler.widget_android.WidgetView.KEY_REFERRER;
 import static com.github.funler.widget_android.WidgetView.KEY_STORAGE;
@@ -42,7 +42,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
             prefs.putString(KEY_REFERRER, referrer);
             prefs.apply();
 
-            Toast.makeText(context, "Got referrer " + referrer, Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, "Got referrer " + referrer, Toast.LENGTH_LONG).show();
         }
     }
 }
