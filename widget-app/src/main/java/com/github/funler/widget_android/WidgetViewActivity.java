@@ -59,17 +59,24 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver focusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            float y = intent.getExtras().getFloat("y") * 2;
+//            float y = intent.getExtras().getFloat("y") * 2;
 
-//            int windowHeight = getWindow().getDecorView().getHeight();
+            int windowHeight = getWindow().getDecorView().getHeight();
             int webViewHeight = bridgeWebView.getHeight();
-//            int margin = windowHeight - webViewHeight;
-            float visibleHeight = (webViewHeight / 4) - 150;
+            int margin = (windowHeight - webViewHeight);
+            int marginTop = margin / 2;
+
+            float y = intent.getExtras().getFloat("y") + margin;
+
+//            float visibleHeight = (webViewHeight / 4) - 150;
+            float visibleHeight = (webViewHeight / 2) - marginTop;
 
             if (y > visibleHeight) {
-                float newY = visibleHeight - y;
+                float newY = visibleHeight - y - margin;
                 bridgeWebView.animate().translationY(newY).start();
             }
+
+            System.out.println("MEASUREMENT: wh = " + windowHeight + ", wbh = " + webViewHeight + ", y = " + y + ", visibleHeight = " + visibleHeight + ", marginTop = " + marginTop);
         }
     };
 
