@@ -46,12 +46,30 @@
                     return res;
                 }
 
-                var nativeStorage = window.NativeStorage;
-
                 window.WebViewJavascriptBridge.isAndroid = true;
                 window.WebViewJavascriptBridge.isIOS = false;
 
                 var jsBridge = window.WebViewJavascriptBridge;
+
+                var NativeStorage = {
+                    getItem: function(key) {
+                        return new Promise(function(resolve, reject) {
+                            jsBridge.callHandler('getNativeStorageItem', [key], function(response) {
+                                resolve(response);
+                            });
+                        });
+                    },
+
+                    setItem: function(key, value) {
+                        return new Promise(function(resolve, reject) {
+                            jsBridge.callHandler('setNativeStorageItem', [key, value], function(response) {
+                                resolve(response);
+                            });
+                        });
+                    }
+                };
+
+                window.NativeStorage = NativeStorage;
 
                 window.CRBWidget.init({
                     uid: window.widget.userId,
@@ -66,11 +84,11 @@
                         left: 0,
                     },
                     setStorageItem: function (key, value) {
-                        return nativeStorage.setItem(key, value)
+                        return NativeStorage.setItem(key, value)
                             .then(processPromise);
                     },
                     getStorageItem: function (key) {
-                        return nativeStorage.getItem(key)
+                        return NativeStorage.getItem(key)
                             .then(processPromise);
                     }
                 });
