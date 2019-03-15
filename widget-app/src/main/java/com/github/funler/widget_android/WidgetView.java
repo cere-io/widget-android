@@ -53,12 +53,12 @@ public class WidgetView {
     private int restoreHeight = 0;
     private boolean isMaximized = false;
 
-    OnSignInHandler onSignInHandler = null;
-    OnSignUpHandler onSignUpHandler = null;
-    OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = null;
-    OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = null;
-    OnGetUserByEmailHandler onGetUserByEmailHandler = null;
-    OnInitializationHandler onInitializationHandler = null;
+    OnSignInHandler onSignInHandler = user -> setMode(WidgetMode.REWARDS);
+    OnSignUpHandler onSignUpHandler = user -> setMode(WidgetMode.REWARDS);
+    OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = url -> {};
+    OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = callback -> callback.handle(Collections.EMPTY_LIST);
+    OnGetUserByEmailHandler onGetUserByEmailHandler = (email, callback) -> callback.handle(false);
+    OnInitializationHandler onInitializationHandler = hasItems -> {};
 
     private OnHideHandler onHideHandler = null;
 
@@ -178,33 +178,23 @@ public class WidgetView {
     }
 
     private void registerOnSignUpHandler() {
-        if (onSignUpHandler != null) {
-            bridgeWebView.registerHandler(onSignUp.name(), onSignUp.handler());
-        }
+        bridgeWebView.registerHandler(onSignUp.name(), onSignUp.handler());
     }
 
     private void registerOnSignInHandler() {
-        if (onSignInHandler != null) {
-            bridgeWebView.registerHandler(onSignIn.name(), onSignIn.handler());
-        }
+        bridgeWebView.registerHandler(onSignIn.name(), onSignIn.handler());
     }
 
     private void registerOnProcessNonFungibleRewardHandler() {
-        if (onProcessNonFungibleRewardHandler != null) {
-            bridgeWebView.registerHandler(onProcessNonFungibleReward.name(), onProcessNonFungibleReward.handler());
-        }
+        bridgeWebView.registerHandler(onProcessNonFungibleReward.name(), onProcessNonFungibleReward.handler());
     }
 
     private void registerOnGetClaimedRewardsHandler() {
-        if (onGetClaimedRewardsHandler != null) {
-            bridgeWebView.registerHandler(onGetClaimedRewards.name(), onGetClaimedRewards.handler());
-        }
+        bridgeWebView.registerHandler(onGetClaimedRewards.name(), onGetClaimedRewards.handler());
     }
 
     private void registerOnGetUserByEmailHandler() {
-        if (onGetUserByEmailHandler != null) {
-            bridgeWebView.registerHandler(onGetUserByEmail.name(), onGetUserByEmail.handler());
-        }
+        bridgeWebView.registerHandler(onGetUserByEmail.name(), onGetUserByEmail.handler());
     }
 
     private void callWidgetJavascript(String method, String data) {
@@ -242,9 +232,7 @@ public class WidgetView {
                     java2JSHandlers.remove(0).handle();
                 }
 
-                if (onInitializationHandler != null) {
-                    onInitializationHandler.handle(hasItems);
-                }
+                onInitializationHandler.handle(hasItems);
             }
         }
     }
@@ -254,12 +242,15 @@ public class WidgetView {
         clear();
         configureWebView();
         load();
+        return this;
+    }
+
+    private void registerUserHandlers() {
         registerOnSignInHandler();
         registerOnSignUpHandler();
         registerOnProcessNonFungibleRewardHandler();
         registerOnGetClaimedRewardsHandler();
         registerOnGetUserByEmailHandler();
-        return this;
     }
 
     private void configureWebView() {
@@ -273,6 +264,8 @@ public class WidgetView {
         for (JS2JavaHandlers handler : JS2JavaHandlers.values()) {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
+
+        registerUserHandlers();
     }
 
     private WidgetView load() {
