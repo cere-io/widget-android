@@ -69,14 +69,14 @@ public class WidgetView {
 
     /**
      * Return a {@code Context} provided in constructor
-     * @return Context - Interface to global information about an application environment.
+     * @return Context Interface to global information about an application environment.
      */
     public Context getContext() { return this.context; }
 
     /**
      * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
-     * @param appId - Application ID from RMS.
-     * @param sections - List of sections you want to display in Widget.
+     * @param appId Application ID from RMS.
+     * @param sections List of sections you want to display in Widget.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView init(String appId, String userId, List<String> sections) {
@@ -94,8 +94,8 @@ public class WidgetView {
      * Sends data to {@code WidgetView} field on SignUp/SignIn pages. For example, you know user email
      * and don't want to let user enter his email again. So, you can do that for user by invoking this
      * method.
-     * @param fieldName - The field name you want to populate. Examples: "email", "password".
-     * @param value - The field value.
+     * @param fieldName The field name you want to populate. Examples: "email", "password".
+     * @param value The field value.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView sendDataToField(String fieldName, String value) {
@@ -105,7 +105,7 @@ public class WidgetView {
 
     /**
      * Switches {@code WidgetView} mode.
-     * @param mode - Current available modes are: WidgetMode.LOGIN, WidgetView.REWARDS.
+     * @param mode Current available modes are: WidgetMode.LOGIN, WidgetView.REWARDS.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView setMode(WidgetMode mode) {
@@ -170,7 +170,7 @@ public class WidgetView {
 
     /**
      * Optional callback which will be fired after {@code WidgetView::hide} method.
-     * @param handler - instance of {@code OnHideHandler}.
+     * @param handler instance of {@code OnHideHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onHide(OnHideHandler handler) {
@@ -180,7 +180,7 @@ public class WidgetView {
 
     /**
      * Optional callback which will be fired after {@code WidgetView} finished sign up.
-     * @param handler - instance of {@code OnSignUpHandler}.
+     * @param handler instance of {@code OnSignUpHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onSignUp(OnSignUpHandler handler) {
@@ -190,7 +190,7 @@ public class WidgetView {
 
     /**
      * Optional callback which will be fired after {@code WidgetView} finished sign in.
-     * @param handler - instance of {@code OnSignInHandler}.
+     * @param handler instance of {@code OnSignInHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onSignIn(OnSignInHandler handler) {
@@ -200,7 +200,7 @@ public class WidgetView {
 
     /**
      * Optional callback which will be fired after {@code WidgetView} processed non-fungible reward.
-     * @param handler - instance of {@code OnProcessNonFungibleRewardHandler}.
+     * @param handler instance of {@code OnProcessNonFungibleRewardHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
@@ -210,7 +210,7 @@ public class WidgetView {
 
     /**
      * Optional callback which should return {@code List<ClaimedReward>} which user already bought.
-     * @param handler - instance of {@code OnGetClaimedRewardsHandler}.
+     * @param handler instance of {@code OnGetClaimedRewardsHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
@@ -220,7 +220,7 @@ public class WidgetView {
 
     /**
      * Optional callback which should return is user already exists in your system.
-     * @param handler - instance of {@code OnGetUserByEmailHandler}
+     * @param handler instance of {@code OnGetUserByEmailHandler}
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onGetUserByEmail(OnGetUserByEmailHandler handler) {
@@ -230,7 +230,7 @@ public class WidgetView {
 
     /**
      * Optional callback which will be fired after {@code WidgetView} initialized.
-     * @param handler - instance of {@code OnInitializationHandler}.
+     * @param handler instance of {@code OnInitializationHandler}.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView onInitializationFinished(OnInitializationHandler handler) {
@@ -238,14 +238,23 @@ public class WidgetView {
         return this;
     }
 
+    /**
+     * Interface used to callback after sign in.
+     */
     public interface OnSignInHandler {
         void handle(WidgetUser user);
     }
 
+    /**
+     * Interface used to callback after sign up.
+     */
     public interface OnSignUpHandler {
         void handle(WidgetUser user);
     }
 
+    /**
+     * Interface used to determine is user already exists in external system.
+     */
     public interface OnGetUserByEmailHandler {
         void handle(String email, ResponseCallback callback);
 
@@ -254,10 +263,16 @@ public class WidgetView {
         }
     }
 
+    /**
+     * Interface used to process non-fungible rewards.
+     */
     public interface OnProcessNonFungibleRewardHandler {
         void handle(String url);
     }
 
+    /**
+     * Interface used for getting rewards user already bought.
+     */
     public interface OnGetClaimedRewardsHandler {
         void handle(ResponseCallback callback);
 
@@ -266,10 +281,16 @@ public class WidgetView {
         }
     }
 
+    /**
+     * Interface used after {@code WidgetView::hide} method.
+     */
     public interface OnHideHandler {
         void handle();
     }
 
+    /**
+     * Interface user after {@code WidgetView::init} method.
+     */
     public interface OnInitializationHandler {
         void handle(boolean hasItems);
     }
