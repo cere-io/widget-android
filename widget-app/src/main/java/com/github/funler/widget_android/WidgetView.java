@@ -169,7 +169,7 @@ public class WidgetView {
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView::hide} method.
+     * Optional callback which will be fired after {@code WidgetView} hide method.
      * @param handler instance of {@code OnHideHandler}.
      * @return current instance of {@code WidgetView}.
      */
@@ -282,14 +282,14 @@ public class WidgetView {
     }
 
     /**
-     * Interface used after {@code WidgetView::hide} method.
+     * Interface used after {@code WidgetView} hide method.
      */
     public interface OnHideHandler {
         void handle();
     }
 
     /**
-     * Interface user after {@code WidgetView::init} method.
+     * Interface user after {@code WidgetView} init method.
      */
     public interface OnInitializationHandler {
         void handle(boolean hasItems);
