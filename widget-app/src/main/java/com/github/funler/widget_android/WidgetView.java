@@ -57,37 +57,57 @@ public class WidgetView {
 
     private OnHideHandler onHideHandler = null;
 
+    /**
+     * Initializes a newly created {@code WidgetView} object without initialization.
+     * @param context Context - Interface to global information about an application environment.
+     */
     public WidgetView(Context context) {
         this.context = context;
         configureWebView();
         INSTANCE = this;
     }
 
+    /**
+     * Return a {@code Context} provided in constructor
+     * @return Context - Interface to global information about an application environment.
+     */
     public Context getContext() { return this.context; }
 
+    /**
+     * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
+     * @param appId - Application ID from RMS.
+     * @param sections - List of sections you want to display in Widget.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView init(String appId, String userId, List<String> sections) {
         return init(appId, userId, sections, WidgetEnv.PRODUCTION);
     }
 
-    private WidgetView init(String appId, String userId, List<String> sections, WidgetEnv env) {
-        this.appId = appId;
-        this.userId = userId;
-        this.sections = sections;
-        this.env = env;
-        load();
-
-        return this;
-    }
-
+    /**
+     * Logging out user from Widget and cleaning up all stored data.
+     */
     public void logout() {
         reload();
     }
 
+    /**
+     * Sends data to {@code WidgetView} field on SignUp/SignIn pages. For example, you know user email
+     * and don't want to let user enter his email again. So, you can do that for user by invoking this
+     * method.
+     * @param fieldName - The field name you want to populate. Examples: "email", "password".
+     * @param value - The field value.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView sendDataToField(String fieldName, String value) {
         putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'" + fieldName + "', '" + value + "'"));
         return this;
     }
 
+    /**
+     * Switches {@code WidgetView} mode.
+     * @param mode - Current available modes are: WidgetMode.LOGIN, WidgetView.REWARDS.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView setMode(WidgetMode mode) {
         this.mode = mode;
 
@@ -100,6 +120,10 @@ public class WidgetView {
         return this;
     }
 
+    /**
+     * Opens Widget in provided {@code WidgetMode}. Default mode - WidgetMode.REWARDS.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView show() {
         Intent intent = new Intent(getContext(), WidgetViewActivity.class);
         getContext().startActivity(intent);
@@ -107,6 +131,10 @@ public class WidgetView {
         return this;
     }
 
+    /**
+     * Closes Widget.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView hide() {
         if (onHideHandler != null) {
             onHideHandler.handle();
@@ -122,55 +150,128 @@ public class WidgetView {
         return this;
     }
 
+    /**
+     * Expands Widget to Fullscreen.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView expand() {
         getContext().sendBroadcast(new Intent(maximize_widget_view.name()));
         return this;
     }
 
+    /**
+     * Returns Widget to initial size.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView restore() {
         getContext().sendBroadcast(new Intent(restore_widget_view.name()));
         return this;
     }
 
+    /**
+     * Optional callback which will be fired after {@code WidgetView::hide} method.
+     * @param handler - instance of {@code OnHideHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onHide(OnHideHandler handler) {
         onHideHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which will be fired after {@code WidgetView} finished sign up.
+     * @param handler - instance of {@code OnSignUpHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onSignUp(OnSignUpHandler handler) {
         onSignUpHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which will be fired after {@code WidgetView} finished sign in.
+     * @param handler - instance of {@code OnSignInHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onSignIn(OnSignInHandler handler) {
         onSignInHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which will be fired after {@code WidgetView} processed non-fungible reward.
+     * @param handler - instance of {@code OnProcessNonFungibleRewardHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
         onProcessNonFungibleRewardHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which should return {@code List<ClaimedReward>} which user already bought.
+     * @param handler - instance of {@code OnGetClaimedRewardsHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
         onGetClaimedRewardsHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which should return is user already exists in your system.
+     * @param handler - instance of {@code OnGetUserByEmailHandler}
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onGetUserByEmail(OnGetUserByEmailHandler handler) {
         onGetUserByEmailHandler = handler;
         return this;
     }
 
+    /**
+     * Optional callback which will be fired after {@code WidgetView} initialized.
+     * @param handler - instance of {@code OnInitializationHandler}.
+     * @return current instance of {@code WidgetView}.
+     */
     public WidgetView onInitializationFinished(OnInitializationHandler handler) {
         onInitializationHandler = handler;
         return this;
     }
 
-    private void callWidgetJavascript(String method, String data) {
-        String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
-        Log.d(TAG, jsCommand);
-        bridgeWebView.loadUrl(jsCommand);
+    public interface OnSignInHandler {
+        void handle(WidgetUser user);
+    }
+
+    public interface OnSignUpHandler {
+        void handle(WidgetUser user);
+    }
+
+    public interface OnGetUserByEmailHandler {
+        void handle(String email, ResponseCallback callback);
+
+        interface ResponseCallback {
+            void handle(boolean exists);
+        }
+    }
+
+    public interface OnProcessNonFungibleRewardHandler {
+        void handle(String url);
+    }
+
+    public interface OnGetClaimedRewardsHandler {
+        void handle(ResponseCallback callback);
+
+        interface ResponseCallback {
+            void handle(List<ClaimedReward> claimedRewards);
+        }
+    }
+
+    public interface OnHideHandler {
+        void handle();
+    }
+
+    public interface OnInitializationHandler {
+        void handle(boolean hasItems);
     }
 
     protected void clear() {
@@ -205,6 +306,12 @@ public class WidgetView {
                 onInitializationHandler.handle(hasItems);
             }
         }
+    }
+
+    private void callWidgetJavascript(String method, String data) {
+        String jsCommand = "javascript:window.CRBWidget." + method + "(" + (data == null ? "" : data) + ");";
+        Log.d(TAG, jsCommand);
+        bridgeWebView.loadUrl(jsCommand);
     }
 
     private WidgetView reload() {
@@ -309,42 +416,6 @@ public class WidgetView {
         getContext().sendBroadcast(new Intent(input_blurred.name()));
     }
 
-    public interface OnSignInHandler {
-        void handle(WidgetUser user);
-    }
-
-    public interface OnSignUpHandler {
-        void handle(WidgetUser user);
-    }
-
-    public interface OnGetUserByEmailHandler {
-        void handle(String email, ResponseCallback callback);
-
-        interface ResponseCallback {
-            void handle(boolean exists);
-        }
-    }
-
-    public interface OnProcessNonFungibleRewardHandler {
-        void handle(String url);
-    }
-
-    public interface OnGetClaimedRewardsHandler {
-        void handle(ResponseCallback callback);
-
-        interface ResponseCallback {
-            void handle(List<ClaimedReward> claimedRewards);
-        }
-    }
-
-    public interface OnHideHandler {
-        void handle();
-    }
-
-    public interface OnInitializationHandler {
-        void handle(boolean hasItems);
-    }
-
     private interface Java2JSHandler {
         void handle();
     }
@@ -356,6 +427,16 @@ public class WidgetView {
             Log.d(TAG, "Will postpone handler");
             java2JSHandlers.add(handler);
         }
+    }
+
+    private WidgetView init(String appId, String userId, List<String> sections, WidgetEnv env) {
+        this.appId = appId;
+        this.userId = userId;
+        this.sections = sections;
+        this.env = env;
+        load();
+
+        return this;
     }
 
     enum StorageKeys {
