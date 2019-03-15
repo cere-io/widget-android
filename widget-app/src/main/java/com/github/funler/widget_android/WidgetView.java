@@ -17,11 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onGetClaimedRewards;
-import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onGetUserByEmail;
-import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onProcessNonFungibleReward;
-import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignIn;
-import static com.github.funler.widget_android.WidgetUserDefinedHandlers.onSignUp;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
@@ -144,57 +139,32 @@ public class WidgetView {
 
     public WidgetView onSignUp(OnSignUpHandler handler) {
         onSignUpHandler = handler;
-        registerOnSignUpHandler();
         return this;
     }
 
     public WidgetView onSignIn(OnSignInHandler handler) {
         onSignInHandler = handler;
-        registerOnSignInHandler();
         return this;
     }
 
     public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
         onProcessNonFungibleRewardHandler = handler;
-        registerOnProcessNonFungibleRewardHandler();
         return this;
     }
 
     public WidgetView onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
         onGetClaimedRewardsHandler = handler;
-        registerOnGetClaimedRewardsHandler();
         return this;
     }
 
     public WidgetView onGetUserByEmail(OnGetUserByEmailHandler handler) {
         onGetUserByEmailHandler = handler;
-        registerOnGetUserByEmailHandler();
         return this;
     }
 
     public WidgetView onInitializationFinished(OnInitializationHandler handler) {
         onInitializationHandler = handler;
         return this;
-    }
-
-    private void registerOnSignUpHandler() {
-        bridgeWebView.registerHandler(onSignUp.name(), onSignUp.handler());
-    }
-
-    private void registerOnSignInHandler() {
-        bridgeWebView.registerHandler(onSignIn.name(), onSignIn.handler());
-    }
-
-    private void registerOnProcessNonFungibleRewardHandler() {
-        bridgeWebView.registerHandler(onProcessNonFungibleReward.name(), onProcessNonFungibleReward.handler());
-    }
-
-    private void registerOnGetClaimedRewardsHandler() {
-        bridgeWebView.registerHandler(onGetClaimedRewards.name(), onGetClaimedRewards.handler());
-    }
-
-    private void registerOnGetUserByEmailHandler() {
-        bridgeWebView.registerHandler(onGetUserByEmail.name(), onGetUserByEmail.handler());
     }
 
     private void callWidgetJavascript(String method, String data) {
@@ -245,14 +215,6 @@ public class WidgetView {
         return this;
     }
 
-    private void registerUserHandlers() {
-        registerOnSignInHandler();
-        registerOnSignUpHandler();
-        registerOnProcessNonFungibleRewardHandler();
-        registerOnGetClaimedRewardsHandler();
-        registerOnGetUserByEmailHandler();
-    }
-
     private void configureWebView() {
         if (bridgeWebView != null) {
             bridgeWebView.clearCache(false);
@@ -265,7 +227,9 @@ public class WidgetView {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
 
-        registerUserHandlers();
+        for (WidgetUserDefinedHandlers handler : WidgetUserDefinedHandlers.values()) {
+            bridgeWebView.registerHandler(handler.name(), handler.handler());
+        }
     }
 
     private WidgetView load() {
