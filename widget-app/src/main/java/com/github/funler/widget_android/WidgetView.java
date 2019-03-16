@@ -24,6 +24,85 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
 
+/**
+ * This is the main class which incapsulates all logic (opening/closing activity etc) and
+ * provides high-level methods to manipulate with.
+ *
+ * <p>Almost all methods of this class supports "method chaining".</p>
+ *
+ * <p>All you need to start working with the class is to instantiate <tt>WidgetView</tt> once and
+ * initialize it with few required params. Example:
+ * </p>
+ *
+ * <p>
+ *     <pre>
+ *         {@code
+ *              List<String> sections = new ArrayList<>();
+ *              sections.add("YOUR_SECTION_1");
+ *              sections.add("YOUR_SECTION_2");
+ *              sections.add("YOUR_SECTION_3");
+ *
+ *              WidgetView widgetView = new WidgetView(context);
+ *              widgetView.init("YOUR_APP_ID", "YOUR_USER_ID", sections);
+ *         }
+ *     </pre>
+ * </p>
+ *
+ * <p>That's enough for start loading {@code WidgetView}, but note that {@code WidgetView} still
+ * remains hidden. Also, first load of {@code WidgetView} takes a some time which depends on
+ * network connection quality. That's why you need to init {@code WidgetView} as soon as possible.
+ * Next initializations after opening app again will be faster because of caching.
+ * </p>
+ *
+ * <p>If you want to show {@code WidgetView} right after it has initialized, you can add listener
+ * {@see OnInitializationHandler} implementation which will invoke method <tt>show</tt> on
+ * {@code WidgetView} instance. Example:
+ * </p>
+ *
+ * <p>
+ *     <pre>
+ *         {@code
+ *              widgetView.onInitializationFinished(hasItems -> {
+ *                  widgetView.show(); // we can show widget without checking is it has rewards configured in RMS
+ *              });
+ *         }
+ *     </pre>
+ * </p>
+ *
+ * <p>
+ *     <pre>
+ *         {@code
+ *              widgetView.onInitializationFinished(hasItems -> {
+ *                  if (hasItems) { // we can show empty widget if it has no rewards configured in RMS
+ *                      widgetView.show();
+ *                  }
+ *              });
+ *         }
+ *     </pre>
+ * </p>
+ *
+ * <p>But the most common way is assigning <tt>OnClickListener</tt> to some {@code View}. Example:</p>
+ *
+ * <p>
+ *     <pre>
+ *         {@code
+ *              button.setOnClickListener(view -> {
+ *                  widgetView.show();
+ *              });
+ *         }
+ *     </pre>
+ * </p>
+ *
+ * @author  Mikhail Chachkouski
+ *
+ * Also see another callbacks you can provide to {@code Widget}:
+ * @see OnSignInHandler
+ * @see OnSignUpHandler
+ * @see OnGetClaimedRewardsHandler
+ * @see OnGetUserByEmailHandler
+ * @see OnProcessNonFungibleRewardHandler
+ * @see OnInitializationHandler
+ */
 public class WidgetView {
 
     static final String KEY_STORAGE = "storage";
@@ -289,9 +368,13 @@ public class WidgetView {
     }
 
     /**
-     * Interface user after {@code WidgetView} init method.
+     * Interface used after {@code WidgetView} init method.
      */
     public interface OnInitializationHandler {
+        /**
+         * Method to implement for <tt>onInitializationFinished</tt> listener.
+         * @param hasItems is {@code WidgetView} received rewards configured in RMS.
+         */
         void handle(boolean hasItems);
     }
 
