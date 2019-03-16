@@ -95,7 +95,7 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *
  * @author  Mikhail Chachkouski
  *
- * Also see another callbacks you can provide to {@code Widget}:
+ * Also see another callbacks you can provide to {@code WidgetView}:
  * @see OnSignInHandler
  * @see OnSignUpHandler
  * @see OnGetClaimedRewardsHandler
