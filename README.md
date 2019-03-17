@@ -46,3 +46,5 @@ Then you can simply call somewhere in your code:
 ```java
   widgetView.show();
 ```
+
+For more info read our [JavaDoc](https://funler.github.io/widget-android/)
