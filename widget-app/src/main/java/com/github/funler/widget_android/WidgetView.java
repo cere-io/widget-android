@@ -43,7 +43,18 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *              sections.add("YOUR_SECTION_3");
  *
  *              WidgetView widgetView = new WidgetView(context);
- *              widgetView.init("YOUR_APP_ID", "YOUR_USER_ID", sections);
+ *              widgetView.init("YOUR_APP_ID", sections);
+ *         }
+ *     </pre>
+ * </p>
+ *
+ * <p>Parameter `sections` depends on your RMS configuration. If you use `default` placement for rewards you can omit this parameter.</p>
+ *
+ * <p>
+ *     <pre>
+ *         {@code
+ *              WidgetView widgetView = new WidgetView(context);
+ *              widgetView.init("YOUR_APP_ID");
  *         }
  *     </pre>
  * </p>
@@ -100,7 +111,6 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  * @see OnSignUpHandler
  * @see OnGetClaimedRewardsHandler
  * @see OnGetUserByEmailHandler
- * @see OnProcessNonFungibleRewardHandler
  * @see OnInitializationHandler
  */
 public class WidgetView {
@@ -115,7 +125,6 @@ public class WidgetView {
     private WidgetMode mode = WidgetMode.REWARDS;
 
     private String appId = "";
-    private String userId = "";
     private List<String> sections = Collections.EMPTY_LIST;
 
     private boolean initialized = false;
@@ -129,7 +138,6 @@ public class WidgetView {
 
     OnSignInHandler onSignInHandler = user -> setMode(WidgetMode.REWARDS);
     OnSignUpHandler onSignUpHandler = user -> setMode(WidgetMode.REWARDS);
-    OnProcessNonFungibleRewardHandler onProcessNonFungibleRewardHandler = url -> {};
     OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = callback -> callback.handle(Collections.EMPTY_LIST);
     OnGetUserByEmailHandler onGetUserByEmailHandler = (email, callback) -> callback.handle(false);
     OnInitializationHandler onInitializationHandler = hasItems -> {};
@@ -158,8 +166,19 @@ public class WidgetView {
      * @param sections List of sections you want to display in Widget.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView init(String appId, String userId, List<String> sections) {
-        return init(appId, userId, sections, WidgetEnv.PRODUCTION);
+    public WidgetView init(String appId, List<String> sections) {
+        return init(appId, sections, WidgetEnv.PRODUCTION);
+    }
+
+    /**
+     * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
+     * @param appId Application ID from RMS.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView init(String appId) {
+        List<String> sections = new ArrayList<>();
+        sections.add("default");
+        return init(appId, sections, WidgetEnv.PRODUCTION);
     }
 
     /**
@@ -278,16 +297,6 @@ public class WidgetView {
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView} processed non-fungible reward.
-     * @param handler instance of {@code OnProcessNonFungibleRewardHandler}.
-     * @return current instance of {@code WidgetView}.
-     */
-    public WidgetView onProcessNonFungibleReward(OnProcessNonFungibleRewardHandler handler) {
-        onProcessNonFungibleRewardHandler = handler;
-        return this;
-    }
-
-    /**
      * Optional callback which should return {@code List<ClaimedReward>} which user already bought.
      * @param handler instance of {@code OnGetClaimedRewardsHandler}.
      * @return current instance of {@code WidgetView}.
@@ -340,13 +349,6 @@ public class WidgetView {
         interface ResponseCallback {
             void handle(boolean exists);
         }
-    }
-
-    /**
-     * Interface used to process non-fungible rewards.
-     */
-    public interface OnProcessNonFungibleRewardHandler {
-        void handle(String url);
     }
 
     /**
@@ -463,7 +465,6 @@ public class WidgetView {
             while ((line = reader.readLine()) != null) {
                 line = line
                         .replaceAll("::widgetUrl::", widgetUrl)
-                        .replaceAll("::userId::", this.userId)
                         .replaceAll("::appId::", this.appId)
                         .replaceAll("::env::", this.env.name().toLowerCase())
                         .replaceAll("::sections::", getSectionsStr())
@@ -533,9 +534,8 @@ public class WidgetView {
         }
     }
 
-    private WidgetView init(String appId, String userId, List<String> sections, WidgetEnv env) {
+    private WidgetView init(String appId, List<String> sections, WidgetEnv env) {
         this.appId = appId;
-        this.userId = userId;
         this.sections = sections;
         this.env = env;
         load();
