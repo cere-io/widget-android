@@ -28,11 +28,6 @@ public enum WidgetUserDefinedHandlers {
         });
     }),
 
-    onProcessNonFungibleReward((Context context, String data, CallBackFunction function) -> {
-        WidgetView.getInstance().onProcessNonFungibleRewardHandler.handle(data);
-        function.onCallBack(null);
-    }),
-
     onSignIn((Context context, String data, CallBackFunction function) -> {
         if (data == null || data.equals("null")) {
             function.onCallBack(null);
