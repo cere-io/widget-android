@@ -451,8 +451,8 @@ public class WidgetView {
                 "&v=" + BuildConfig.VERSION_NAME +
                 "&appId=" + appId +
                 "&sections=" + getSectionsStr() +
-                "&mode=" + this.mode.name().toLowerCase() +
-                "&env=" + this.env.name().toLowerCase());
+                "&mode=" + mode.name().toLowerCase() +
+                "&env=" + env.name().toLowerCase());
 
         return this;
     }
