@@ -3,14 +3,6 @@ apply plugin: 'com.android.library'
 
 group='com.github.funler'
 
-ext {
-    versionSdk = 28
-
-    major = 1
-    minor = 1
-    patch = 2
-}
-
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -19,7 +11,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName version
+        versionName "1.1.2"
     }
 
     buildTypes {

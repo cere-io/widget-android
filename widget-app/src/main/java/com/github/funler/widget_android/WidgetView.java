@@ -448,7 +448,7 @@ public class WidgetView {
     private WidgetView load() {
         bridgeWebView.loadUrl(this.env.widgetURL() + "/native.html?" +
                 "platform=android" +
-                "&v=1.0.0" +
+                "&v=" + BuildConfig.VERSION_NAME +
                 "&appId=" + appId +
                 "&sections=" + getSectionsStr() +
                 "&mode=" + this.mode.name().toLowerCase() +
