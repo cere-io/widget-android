@@ -446,37 +446,15 @@ public class WidgetView {
     }
 
     private WidgetView load() {
-        String jsPostfix = "/static/js/bundle.js";
-
-        String html = generateHTML(this.env.sdkURL() + jsPostfix);
-        Log.d(TAG, "Load HTML:\n" + html);
-
-        bridgeWebView.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
+        bridgeWebView.loadUrl(this.env.widgetURL() + "/native.html?" +
+                "platform=android" +
+                "&v=1.0.0" +
+                "&appId=" + appId +
+                "&sections=" + getSectionsStr() +
+                "&mode=" + this.mode.name().toLowerCase() +
+                "&env=" + this.env.name().toLowerCase());
 
         return this;
-    }
-
-    private String generateHTML(String widgetUrl) {
-        StringBuilder stringBuilder = new StringBuilder("");
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.getContext().getAssets().open("index.html")));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line
-                        .replaceAll("::widgetUrl::", widgetUrl)
-                        .replaceAll("::appId::", this.appId)
-                        .replaceAll("::env::", this.env.name().toLowerCase())
-                        .replaceAll("::sections::", getSectionsStr())
-                        .replaceAll("::mode::", this.mode.name().toLowerCase());
-
-                stringBuilder.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return stringBuilder.toString();
     }
 
     private String getSectionsStr() {
