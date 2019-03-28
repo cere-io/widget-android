@@ -6,19 +6,19 @@ import android.view.Display;
 import android.view.WindowManager;
 
 class WidgetUtil {
-    static float dpFromPx(Context context, float px) {
+    static double dpFromPx(Context context, double px) {
         return px / context.getResources().getDisplayMetrics().density;
     }
 
-    static float pxFromDp(Context context, float dp) {
+    static double pxFromDp(Context context, double dp) {
         return dp * context.getResources().getDisplayMetrics().density;
     }
 
-    static float pxWidthFromPercents(Context context, float percents) {
+    static double pxWidthFromPercents(Context context, double percents) {
         return getMetrics(context).widthPixels * percents / 100;
     }
 
-    static float pxHeightFromPercents(Context context, float percents) {
+    static double pxHeightFromPercents(Context context, double percents) {
         return getMetrics(context).heightPixels * percents / 100;
     }
 

@@ -66,17 +66,17 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver focusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            float windowHeight = dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
-            float webViewHeight = dpFromPx(getBaseContext(), bridgeWebView.getHeight());
-            float margin = (windowHeight - webViewHeight);
+            double windowHeight = dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
+            double webViewHeight = dpFromPx(getBaseContext(), bridgeWebView.getHeight());
+            double margin = (windowHeight - webViewHeight);
 
-            float y = intent.getExtras().getFloat("y") + margin;
+            double y = intent.getExtras().getDouble("y") + margin;
 
-            float visibleHeight = windowHeight / 2;
+            double visibleHeight = windowHeight / 2;
 
             if (y > visibleHeight) {
-                float newY = visibleHeight - y - (margin / 2);
-                bridgeWebView.animate().translationY(pxFromDp(getBaseContext(), newY)).start();
+                double newY = visibleHeight - y - (margin / 2);
+                bridgeWebView.animate().translationY((int) pxFromDp(getBaseContext(), newY)).start();
             }
         }
     };
@@ -176,8 +176,8 @@ public class WidgetViewActivity extends AppCompatActivity {
         DisplayMetrics metrics = getMetrics(getBaseContext());
 
         if (widgetView.getWidthPx() == 0) {
-            widgetView.setWidthPx(metrics.widthPixels - Math.round(pxWidthFromPercents(getBaseContext(), LEFT_RIGHT_MARGIN)));
-            widgetView.setHeightPx(metrics.heightPixels - Math.round(pxHeightFromPercents(getBaseContext(), TOP_BOTTOM_MARGIN)));
+            widgetView.setWidthPx(metrics.widthPixels - (int) Math.round(pxWidthFromPercents(getBaseContext(), LEFT_RIGHT_MARGIN)));
+            widgetView.setHeightPx(metrics.heightPixels - (int) Math.round(pxHeightFromPercents(getBaseContext(), TOP_BOTTOM_MARGIN)));
         }
 
         if (widgetView.isMaximized()) {

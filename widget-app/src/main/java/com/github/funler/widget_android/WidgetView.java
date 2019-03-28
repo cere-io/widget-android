@@ -133,10 +133,10 @@ public class WidgetView {
     private int heightPx = 0;
     private int topPx = -1;
     private int leftPx = -1;
-    private float widthPercentage = 0;
-    private float heightPercentage = 0;
-    private float topPercentage = 0;
-    private float leftPercentage = 0;
+    private double widthPercentage = 0;
+    private double heightPercentage = 0;
+    private double topPercentage = 0;
+    private double leftPercentage = 0;
     private boolean isMaximized = false;
 
     OnSignInHandler onSignInHandler = user -> setMode(WidgetMode.REWARDS);
@@ -308,9 +308,9 @@ public class WidgetView {
      * @param widthInPercents value in percents.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView setWidth(float widthInPercents) {
+    public WidgetView setWidth(double widthInPercents) {
         this.widthPercentage = widthInPercents;
-        setWidthPx(Math.round(WidgetUtil.pxWidthFromPercents(getContext(), widthInPercents)));
+        setWidthPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), widthInPercents)));
         return this;
     }
 
@@ -319,9 +319,9 @@ public class WidgetView {
      * @param heightInPercents value in percents.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView setHeight(float heightInPercents) {
+    public WidgetView setHeight(double heightInPercents) {
         this.heightPercentage = heightInPercents;
-        setHeightPx(Math.round(WidgetUtil.pxHeightFromPercents(getContext(), heightInPercents)));
+        setHeightPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), heightInPercents)));
         return this;
     }
 
@@ -330,9 +330,9 @@ public class WidgetView {
      * @param topInPercents value in percents.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView setTop(float topInPercents) {
+    public WidgetView setTop(double topInPercents) {
         this.topPercentage = topInPercents;
-        setTopPx(Math.round(WidgetUtil.pxHeightFromPercents(getContext(), topInPercents)));
+        setTopPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), topInPercents)));
         return this;
     }
 
@@ -341,9 +341,9 @@ public class WidgetView {
      * @param leftInPercents value in percents.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView setLeft(float leftInPercents) {
+    public WidgetView setLeft(double leftInPercents) {
         this.leftPercentage = leftInPercents;
-        setLeftPx(Math.round(WidgetUtil.pxWidthFromPercents(getContext(), leftInPercents)));
+        setLeftPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), leftInPercents)));
         return this;
     }
 
@@ -479,7 +479,7 @@ public class WidgetView {
 
     protected boolean isInitialized() { return initialized; }
 
-    protected void setInitialized(boolean initialized, boolean hasItems) {
+    protected void setInitialized(boolean initialized, WidgetRMSData data) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
             getContext().sendBroadcast(new Intent(initialized_widget_view.name()));
@@ -490,7 +490,23 @@ public class WidgetView {
                     java2JSHandlers.remove(0).handle();
                 }
 
-                onInitializationHandler.handle(hasItems);
+                if (data.getWidth() != -1) {
+                    setWidth(data.getWidth());
+                }
+
+                if (data.getHeight() != -1) {
+                    setHeight(data.getHeight());
+                }
+
+                if (data.getTop() != -1) {
+                    setTop(data.getTop());
+                }
+
+                if (data.getLeft() != -1) {
+                    setLeft(data.getLeft());
+                }
+
+                onInitializationHandler.handle(data.isHasItems());
             }
         }
     }
@@ -551,7 +567,6 @@ public class WidgetView {
     }
 
     void setWidthPx(int widthPx) {
-        System.out.println("METRICS WIDTH PX: " + widthPx);
         this.widthPx = widthPx;
     }
 
@@ -560,7 +575,6 @@ public class WidgetView {
     }
 
     void setHeightPx(int heightPx) {
-        System.out.println("METRICS HEIGHT PX: " + heightPx);
         this.heightPx = heightPx;
     }
 
@@ -569,7 +583,6 @@ public class WidgetView {
     }
 
     void setTopPx(int topPx) {
-        System.out.println("METRICS TOP PX: " + topPx);
         this.topPx = topPx;
     }
 
@@ -578,7 +591,6 @@ public class WidgetView {
     }
 
     void setLeftPx(int leftPx) {
-        System.out.println("METRICS LEFT PX: " + leftPx);
         this.leftPx = leftPx;
     }
 
