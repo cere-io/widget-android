@@ -1,18 +1,17 @@
 package com.github.funler.widget_android;
 
+import android.animation.LayoutTransition;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -20,6 +19,11 @@ import android.widget.RelativeLayout;
 import com.github.funler.jsbridge.BridgeWebView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.github.funler.widget_android.WidgetUtil.dpFromPx;
+import static com.github.funler.widget_android.WidgetUtil.getMetrics;
+import static com.github.funler.widget_android.WidgetUtil.pxFromDp;
+import static com.github.funler.widget_android.WidgetUtil.pxHeightFromPercents;
+import static com.github.funler.widget_android.WidgetUtil.pxWidthFromPercents;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
@@ -31,6 +35,9 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     private BridgeWebView bridgeWebView;
     private RelativeLayout root;
+    private WidgetView widgetView = WidgetView.getInstance();
+    private final int LEFT_RIGHT_MARGIN = 5;
+    private final int TOP_BOTTOM_MARGIN = 5;
 
     private final BroadcastReceiver closeReceiver = new BroadcastReceiver() {
         @Override
@@ -43,7 +50,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver maximizeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            WidgetView.getInstance().setMaximized(true);
+            widgetView.setMaximized(true);
             maximize();
         }
     };
@@ -51,7 +58,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver restoreReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            WidgetView.getInstance().setMaximized(false);
+            widgetView.setMaximized(false);
             minimize();
         }
     };
@@ -59,8 +66,8 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver focusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            float windowHeight = WidgetUtil.dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
-            float webViewHeight = WidgetUtil.dpFromPx(getBaseContext(), bridgeWebView.getHeight());
+            float windowHeight = dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
+            float webViewHeight = dpFromPx(getBaseContext(), bridgeWebView.getHeight());
             float margin = (windowHeight - webViewHeight);
 
             float y = intent.getExtras().getFloat("y") + margin;
@@ -69,10 +76,8 @@ public class WidgetViewActivity extends AppCompatActivity {
 
             if (y > visibleHeight) {
                 float newY = visibleHeight - y - (margin / 2);
-                bridgeWebView.animate().translationY(WidgetUtil.pxFromDp(getBaseContext(), newY)).start();
+                bridgeWebView.animate().translationY(pxFromDp(getBaseContext(), newY)).start();
             }
-
-//            System.out.println("MEASUREMENT: wh = " + windowHeight + ", wbh = " + webViewHeight + ", y = " + y + ", visibleHeight = " + visibleHeight + ", marginTop = " + marginTop);
         }
     };
 
@@ -101,9 +106,11 @@ public class WidgetViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_widget_view);
 
         root = findViewById(R.id.root);
-        bridgeWebView = WidgetView.getInstance().getBridgeWebView();
+        root.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
-        if (WidgetView.getInstance().isInitialized()) {
+        bridgeWebView = widgetView.getBridgeWebView();
+
+        if (widgetView.isInitialized()) {
             attachBridgetView();
         } else {
             RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
@@ -124,7 +131,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        WidgetView.getInstance().inputBlurred();
+        widgetView.inputBlurred();
     }
 
     @Override
@@ -166,30 +173,28 @@ public class WidgetViewActivity extends AppCompatActivity {
     }
 
     private void configureInitialSize() {
-        WindowManager wm = (WindowManager) WidgetView.getInstance().getContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
+        DisplayMetrics metrics = getMetrics(getBaseContext());
 
-        if (WidgetView.getInstance().getRestoreWidth() == 0) {
-            WidgetView.getInstance().setRestoreWidth(metrics.widthPixels - 60);
-            WidgetView.getInstance().setRestoreHeight(metrics.heightPixels - 100);
+        if (widgetView.getWidthPx() == 0) {
+            widgetView.setWidthPx(metrics.widthPixels - Math.round(pxWidthFromPercents(getBaseContext(), LEFT_RIGHT_MARGIN)));
+            widgetView.setHeightPx(metrics.heightPixels - Math.round(pxHeightFromPercents(getBaseContext(), TOP_BOTTOM_MARGIN)));
         }
 
-        if (WidgetView.getInstance().isMaximized()) {
+        if (widgetView.isMaximized()) {
             maximize();
         } else {
             minimize();
         }
     }
 
-    private void updateLayoutParams(int width, int height) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) root.getLayoutParams();
-        if (params == null) {
-            params = new FrameLayout.LayoutParams(width, height);
+    private void updateLayoutParams(int width, int height, int top, int left) {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+
+        if (top == -1 && left == -1) {
+            params.gravity = Gravity.CENTER;
         } else {
-            params.width = width;
-            params.height = height;
+            params.topMargin = top > 0 ? top : 0;
+            params.leftMargin = left > 0 ? left : 0;
         }
 
         root.setLayoutParams(params);
@@ -211,13 +216,15 @@ public class WidgetViewActivity extends AppCompatActivity {
     }
 
     private void maximize() {
-        updateLayoutParams(MATCH_PARENT, MATCH_PARENT);
+        updateLayoutParams(MATCH_PARENT, MATCH_PARENT, -1, -1);
     }
 
     private void minimize() {
         updateLayoutParams(
-                WidgetView.getInstance().getRestoreWidth(),
-                WidgetView.getInstance().getRestoreHeight()
+                widgetView.getWidthPx(),
+                widgetView.getHeightPx(),
+                widgetView.getTopPx(),
+                widgetView.getLeftPx()
         );
     }
 
