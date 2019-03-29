@@ -70,7 +70,7 @@ public class WidgetViewActivity extends AppCompatActivity {
             double webViewHeight = dpFromPx(getBaseContext(), bridgeWebView.getHeight());
             double margin = (windowHeight - webViewHeight);
 
-            double y = intent.getExtras().getDouble("y") + margin;
+            double y = intent.getExtras().getFloat("y") + margin;
 
             double visibleHeight = windowHeight / 2;
 
