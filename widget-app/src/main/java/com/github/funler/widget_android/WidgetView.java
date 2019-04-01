@@ -4,12 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -263,13 +269,59 @@ public class WidgetView {
         Intent intent = new Intent(getContext(), WidgetViewActivity.class);
         getContext().startActivity(intent);
         callWidgetJavascript("__showOnNative", null);
+
+        String type = "image/*";
+        String filename = "/DCIM/Camera/tree.jpg";
+        String mediaPath = Environment.getExternalStorageDirectory() + filename;
+        createInstagramIntent(type, mediaPath);
+
         return this;
     }
 
-    /**
-     * Closes Widget.
-     * @return current instance of {@code WidgetView}.
-     */
+    private void createInstagramIntent(String type, String mediaPath) {
+//        File media = new File(mediaPath);
+        File media = getPhotoFileUri("Camera/tree.jpg");
+
+        Uri uri = Uri.fromFile(media);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(
+                    getContext(),
+                    getContext().getString(R.string.file_provider_authority),
+                    media
+            );
+        }
+
+        System.out.println("=========================>>>>>>>>>>>>>>> 1 " + uri);
+        System.out.println("=========================>>>>>>>>>>>>>>> 2 " + media);
+        System.out.println("=========================>>>>>>>>>>>>>>> 3 " + mediaPath);
+
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType(type);
+//        share.setPackage("com.instagram.android");
+//        share.putExtra(Intent.EXTRA_TEXT, "#mikeold.cere.io");
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        getContext().startActivity(Intent.createChooser(share, "Share to"));
+    }
+
+    public File getPhotoFileUri(String fileName) {
+        // Get safe storage directory for photos
+        // Use `getExternalFilesDir` on Context to access package-specific directories.
+        // This way, we don't need to request external read/write runtime permissions.
+        File mediaStorageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+            Log.d(TAG, "failed to create directory");
+        }
+
+        return new File(mediaStorageDir.getPath() + File.separator + fileName);
+    }
+
+        /**
+         * Closes Widget.
+         * @return current instance of {@code WidgetView}.
+         */
     public WidgetView hide() {
         if (onHideHandler != null) {
             onHideHandler.handle();
