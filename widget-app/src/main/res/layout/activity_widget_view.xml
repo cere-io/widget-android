@@ -3,7 +3,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:id="@+id/cere_logo_layout"
@@ -19,7 +19,7 @@
             android:layout_marginTop="-60dp"
             android:contentDescription="@string/cere_logo_bg"
             android:scaleType="fitStart"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:src="@drawable/logo_bg" />
 
         <ImageView
@@ -39,7 +39,7 @@
             android:contentDescription="@string/cere_logo_bg"
             android:rotation="180"
             android:scaleType="fitStart"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:src="@drawable/logo_bg" />
     </RelativeLayout>
 

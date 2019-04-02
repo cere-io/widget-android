@@ -10,9 +10,6 @@ import com.github.funler.jsbridge.BridgeWebView;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -132,8 +129,14 @@ public class WidgetView {
 
     private Context context;
     private BridgeWebView bridgeWebView;
-    private int restoreWidth = 0;
-    private int restoreHeight = 0;
+    private int widthPx = 0;
+    private int heightPx = 0;
+    private int topPx = -1;
+    private int leftPx = -1;
+    private double widthPercentage = 0;
+    private double heightPercentage = 0;
+    private double topPercentage = 0;
+    private double leftPercentage = 0;
     private boolean isMaximized = false;
 
     OnSignInHandler onSignInHandler = user -> setMode(WidgetMode.REWARDS);
@@ -150,6 +153,40 @@ public class WidgetView {
      */
     public WidgetView(Context context) {
         this.context = context;
+        configureWebView();
+        INSTANCE = this;
+    }
+
+    /**
+     * Initializes a newly created {@code WidgetView} object without initialization,
+     * but with desired width and height.
+     * @param context Context - Interface to global information about an application environment.
+     * @param widthInPercents desired width for {@code WidgetView} in percents.
+     * @param heightInPercents desired height for {@code WidgetView} in percents.
+     */
+    public WidgetView(Context context, float widthInPercents, float heightInPercents) {
+        this.context = context;
+        setWidth(widthInPercents);
+        setHeight(heightInPercents);
+        configureWebView();
+        INSTANCE = this;
+    }
+
+    /**
+     * Initializes a newly created {@code WidgetView} object without initialization,
+     * but with desired width and height.
+     * @param context Context - Interface to global information about an application environment.
+     * @param widthInPercents desired width for {@code WidgetView} in percents.
+     * @param heightInPercents desired height for {@code WidgetView} in percents.
+     * @param topInPercents desired top margin for {@code WidgetView} in percents.
+     * @param leftInPercents desired left margin for {@code WidgetView} in percents.
+     */
+    public WidgetView(Context context, float widthInPercents, float heightInPercents, float topInPercents, float leftInPercents) {
+        this.context = context;
+        setWidth(widthInPercents);
+        setHeight(heightInPercents);
+        setTop(topInPercents);
+        setLeft(leftInPercents);
         configureWebView();
         INSTANCE = this;
     }
@@ -263,6 +300,50 @@ public class WidgetView {
      */
     public WidgetView restore() {
         getContext().sendBroadcast(new Intent(restore_widget_view.name()));
+        return this;
+    }
+
+    /**
+     * Set desired width for {@code WidgetView} in percents.
+     * @param widthInPercents value in percents.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView setWidth(double widthInPercents) {
+        this.widthPercentage = widthInPercents;
+        setWidthPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), widthInPercents)));
+        return this;
+    }
+
+    /**
+     * Set desired height for {@code WidgetView} in percents.
+     * @param heightInPercents value in percents.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView setHeight(double heightInPercents) {
+        this.heightPercentage = heightInPercents;
+        setHeightPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), heightInPercents)));
+        return this;
+    }
+
+    /**
+     * Set desired top margin for {@code WidgetView} in percents.
+     * @param topInPercents value in percents.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView setTop(double topInPercents) {
+        this.topPercentage = topInPercents;
+        setTopPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), topInPercents)));
+        return this;
+    }
+
+    /**
+     * Set desired left margin for {@code WidgetView} in percents.
+     * @param leftInPercents value in percents.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView setLeft(double leftInPercents) {
+        this.leftPercentage = leftInPercents;
+        setLeftPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), leftInPercents)));
         return this;
     }
 
@@ -398,7 +479,7 @@ public class WidgetView {
 
     protected boolean isInitialized() { return initialized; }
 
-    protected void setInitialized(boolean initialized, boolean hasItems) {
+    protected void setInitialized(boolean initialized, WidgetRMSData data) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
             getContext().sendBroadcast(new Intent(initialized_widget_view.name()));
@@ -409,7 +490,23 @@ public class WidgetView {
                     java2JSHandlers.remove(0).handle();
                 }
 
-                onInitializationHandler.handle(hasItems);
+                if (data.getWidth() != -1) {
+                    setWidth(data.getWidth());
+                }
+
+                if (data.getHeight() != -1) {
+                    setHeight(data.getHeight());
+                }
+
+                if (data.getTop() != -1) {
+                    setTop(data.getTop());
+                }
+
+                if (data.getLeft() != -1) {
+                    setLeft(data.getLeft());
+                }
+
+                onInitializationHandler.handle(data.isHasItems());
             }
         }
     }
@@ -446,37 +543,15 @@ public class WidgetView {
     }
 
     private WidgetView load() {
-        String jsPostfix = "/static/js/bundle.js";
-
-        String html = generateHTML(this.env.sdkURL() + jsPostfix);
-        Log.d(TAG, "Load HTML:\n" + html);
-
-        bridgeWebView.loadDataWithBaseURL(this.env.widgetURL(), html, "text/html", "UTF-8", null);
+        bridgeWebView.loadUrl(this.env.widgetURL() + "/native.html?" +
+                "platform=android" +
+                "&v=" + BuildConfig.VERSION_NAME +
+                "&appId=" + appId +
+                "&sections=" + getSectionsStr() +
+                "&mode=" + mode.name().toLowerCase() +
+                "&env=" + env.name().toLowerCase());
 
         return this;
-    }
-
-    private String generateHTML(String widgetUrl) {
-        StringBuilder stringBuilder = new StringBuilder("");
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.getContext().getAssets().open("index.html")));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line
-                        .replaceAll("::widgetUrl::", widgetUrl)
-                        .replaceAll("::appId::", this.appId)
-                        .replaceAll("::env::", this.env.name().toLowerCase())
-                        .replaceAll("::sections::", getSectionsStr())
-                        .replaceAll("::mode::", this.mode.name().toLowerCase());
-
-                stringBuilder.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return stringBuilder.toString();
     }
 
     private String getSectionsStr() {
@@ -487,20 +562,36 @@ public class WidgetView {
         return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
     }
 
-    int getRestoreWidth() {
-        return restoreWidth;
+    int getWidthPx() {
+        return widthPx;
     }
 
-    void setRestoreWidth(int restoreWidth) {
-        this.restoreWidth = restoreWidth;
+    void setWidthPx(int widthPx) {
+        this.widthPx = widthPx;
     }
 
-    int getRestoreHeight() {
-        return restoreHeight;
+    int getHeightPx() {
+        return heightPx;
     }
 
-    void setRestoreHeight(int restoreHeight) {
-        this.restoreHeight = restoreHeight;
+    void setHeightPx(int heightPx) {
+        this.heightPx = heightPx;
+    }
+
+    int getTopPx() {
+        return topPx;
+    }
+
+    void setTopPx(int topPx) {
+        this.topPx = topPx;
+    }
+
+    int getLeftPx() {
+        return leftPx;
+    }
+
+    void setLeftPx(int leftPx) {
+        this.leftPx = leftPx;
     }
 
     boolean isMaximized() {

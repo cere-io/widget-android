@@ -55,8 +55,13 @@ public enum JS2JavaHandlers {
     }),
 
     initialized((Context context, String data, CallBackFunction function) -> {
-        WidgetView.getInstance().setInitialized(true, Boolean.parseBoolean(data));
-        function.onCallBack(null);
+        try {
+            WidgetView.getInstance().setInitialized(true, WidgetRMSData.fromJSON(data));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            function.onCallBack(null);
+        }
     }),
 
     shareWith((Context context, String data, CallBackFunction function) -> {

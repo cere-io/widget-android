@@ -1,6 +1,7 @@
 package com.github.funler.widget_android;
 
 public enum WidgetEnv {
+    DEVELOPMENT("", ""),
     LOCAL("", ""),
     DEV1("https://widget-sdk.dev.cere.io", "https://widget.dev.cere.io"),
     STAGE("https://widget-sdk.stage.cere.io", "https://widget.stage.cere.io"),
