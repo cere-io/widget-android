@@ -42,6 +42,8 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver closeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            detachBridgeView();
+            unregisterReceivers();
             finish();
             overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
         }
@@ -94,7 +96,10 @@ public class WidgetViewActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
                 root.removeView(cereLogoLayout);
-                attachBridgetView();
+
+                if (bridgeWebView.getParent() == null) {
+                    attachBridgetView();
+                }
             });
         }
     };
@@ -132,13 +137,6 @@ public class WidgetViewActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         widgetView.inputBlurred();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        detachBridgeView();
-        unregisterReceivers();
     }
 
     private void makeFullScreenWithoutSystemUI() {
@@ -211,7 +209,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     private void detachBridgeView() {
         if (bridgeWebView != null && bridgeWebView.getParent() != null) {
-            ((ViewGroup) bridgeWebView.getParent()).removeView(bridgeWebView);
+            ((ViewGroup) bridgeWebView.getParent()).removeAllViews();
         }
     }
 
