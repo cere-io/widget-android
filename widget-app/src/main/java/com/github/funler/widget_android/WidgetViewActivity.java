@@ -96,7 +96,10 @@ public class WidgetViewActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
                 root.removeView(cereLogoLayout);
-                attachBridgetView();
+
+                if (bridgeWebView.getParent() == null) {
+                    attachBridgetView();
+                }
             });
         }
     };
