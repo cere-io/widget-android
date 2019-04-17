@@ -8,17 +8,21 @@ import android.util.Log;
 
 import com.github.funler.jsbridge.BridgeWebView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
 
 /**
@@ -30,22 +34,6 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  * <p>All you need to start working with the class is to instantiate <tt>WidgetView</tt> once and
  * initialize it with few required params. Example:
  * </p>
- *
- * <p>
- *     <pre>
- *         {@code
- *              List<String> sections = new ArrayList<>();
- *              sections.add("YOUR_SECTION_1");
- *              sections.add("YOUR_SECTION_2");
- *              sections.add("YOUR_SECTION_3");
- *
- *              WidgetView widgetView = new WidgetView(context);
- *              widgetView.init("YOUR_APP_ID", sections);
- *         }
- *     </pre>
- * </p>
- *
- * <p>Parameter `sections` depends on your RMS configuration. If you use `default` placement for rewards you can omit this parameter.</p>
  *
  * <p>
  *     <pre>
@@ -70,20 +58,8 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  * <p>
  *     <pre>
  *         {@code
- *              widgetView.onInitializationFinished(hasItems -> {
- *                  widgetView.show(); // we can show widget without checking is it has rewards configured in RMS
- *              });
- *         }
- *     </pre>
- * </p>
- *
- * <p>
- *     <pre>
- *         {@code
- *              widgetView.onInitializationFinished(hasItems -> {
- *                  if (hasItems) { // we can show empty widget if it has no rewards configured in RMS
- *                      widgetView.show();
- *                  }
+ *              widgetView.onInitializationFinished(() -> {
+ *                  widgetView.show();
  *              });
  *         }
  *     </pre>
@@ -120,9 +96,9 @@ public class WidgetView {
 
     private WidgetEnv env = WidgetEnv.PRODUCTION;
     private WidgetMode mode = WidgetMode.REWARDS;
+    private Map<String, Engagement> engagementMap = new HashMap<>();
 
     private String appId = "";
-    private List<String> sections = Collections.EMPTY_LIST;
 
     private boolean initialized = false;
     private List<Java2JSHandler> java2JSHandlers = new ArrayList<>();
@@ -143,7 +119,7 @@ public class WidgetView {
     OnSignUpHandler onSignUpHandler = user -> setMode(WidgetMode.REWARDS);
     OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = callback -> callback.handle(Collections.EMPTY_LIST);
     OnGetUserByEmailHandler onGetUserByEmailHandler = (email, callback) -> callback.handle(false);
-    OnInitializationHandler onInitializationHandler = hasItems -> {};
+    OnInitializationHandler onInitializationHandler = () -> {};
 
     private OnHideHandler onHideHandler = null;
 
@@ -200,22 +176,10 @@ public class WidgetView {
     /**
      * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
      * @param appId Application ID from RMS.
-     * @param sections List of sections you want to display in Widget.
-     * @return current instance of {@code WidgetView}.
-     */
-    public WidgetView init(String appId, List<String> sections) {
-        return init(appId, sections, WidgetEnv.PRODUCTION);
-    }
-
-    /**
-     * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
-     * @param appId Application ID from RMS.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView init(String appId) {
-        List<String> sections = new ArrayList<>();
-        sections.add("default");
-        return init(appId, sections, WidgetEnv.PRODUCTION);
+        return init(appId, WidgetEnv.PRODUCTION);
     }
 
     /**
@@ -255,14 +219,34 @@ public class WidgetView {
         return this;
     }
 
+    public boolean hasItems(String placement) {
+        if (engagementMap.containsKey(placement)) {
+            return engagementMap.get(placement).getRewardItems().size() > 0 ||
+                    engagementMap.get(placement).getSocialTasks().size() > 0;
+        }
+
+        return false;
+    }
+
+    public Set<String> getPlacements() {
+        return engagementMap.keySet();
+    }
+
     /**
-     * Opens Widget in provided {@code WidgetMode}. Default mode - WidgetMode.REWARDS.
+     * Opens {@code WidgetView} in on boarding mode .
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView show() {
-        Intent intent = new Intent(getContext(), WidgetViewActivity.class);
-        getContext().startActivity(intent);
-        callWidgetJavascript("__showOnNative", null);
+    public WidgetView showOnBoarding() {
+        callWidgetJavascript("showOnBoarding", null);
+        return this;
+    }
+
+    /**
+     * Opens {@code WidgetView} with given placement.
+     * @return current instance of {@code WidgetView}.
+     */
+    public WidgetView show(String placement) {
+        callWidgetJavascript("show", "'" + placement + "'");
         return this;
     }
 
@@ -277,20 +261,6 @@ public class WidgetView {
 
         getContext().sendBroadcast(new Intent(close_widget_view.name()));
 
-        return this;
-    }
-
-    public WidgetView collapse() {
-        // TODO: to implement
-        return this;
-    }
-
-    /**
-     * Expands Widget to Fullscreen.
-     * @return current instance of {@code WidgetView}.
-     */
-    public WidgetView expand() {
-        getContext().sendBroadcast(new Intent(maximize_widget_view.name()));
         return this;
     }
 
@@ -454,11 +424,7 @@ public class WidgetView {
      * Interface used after {@code WidgetView} init method.
      */
     public interface OnInitializationHandler {
-        /**
-         * Method to implement for <tt>onInitializationFinished</tt> listener.
-         * @param hasItems is {@code WidgetView} received rewards configured in RMS.
-         */
-        void handle(boolean hasItems);
+        void handle();
     }
 
     protected void clear() {
@@ -506,7 +472,21 @@ public class WidgetView {
                     setLeft(data.getLeft());
                 }
 
-                onInitializationHandler.handle(data.isHasItems());
+                bridgeWebView.evaluateJavascript("window.CRBWidget.__getEngagements()", (String value) -> {
+                    try {
+                        JSONObject engs = new JSONObject(value);
+                        Iterator<String> keys = engs.keys();
+
+                        while (keys.hasNext()) {
+                            String key = keys.next();
+                            engagementMap.put(key, Engagement.fromJson(engs.getString(key)));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    onInitializationHandler.handle();
+                });
             }
         }
     }
@@ -547,19 +527,10 @@ public class WidgetView {
                 "platform=android" +
                 "&v=" + BuildConfig.VERSION_NAME +
                 "&appId=" + appId +
-                "&sections=" + getSectionsStr() +
                 "&mode=" + mode.name().toLowerCase() +
                 "&env=" + env.name().toLowerCase());
 
         return this;
-    }
-
-    private String getSectionsStr() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String section : this.sections) {
-            stringBuilder.append(section).append(",");
-        }
-        return stringBuilder.toString().substring(0, stringBuilder.toString().lastIndexOf(","));
     }
 
     int getWidthPx() {
@@ -612,6 +583,13 @@ public class WidgetView {
         getContext().sendBroadcast(new Intent(input_blurred.name()));
     }
 
+    WidgetView show() {
+        Intent intent = new Intent(getContext(), WidgetViewActivity.class);
+        getContext().startActivity(intent);
+        callWidgetJavascript("__showOnNative", null);
+        return this;
+    }
+
     private interface Java2JSHandler {
         void handle();
     }
@@ -625,9 +603,8 @@ public class WidgetView {
         }
     }
 
-    private WidgetView init(String appId, List<String> sections, WidgetEnv env) {
+    private WidgetView init(String appId, WidgetEnv env) {
         this.appId = appId;
-        this.sections = sections;
         this.env = env;
         load();
 

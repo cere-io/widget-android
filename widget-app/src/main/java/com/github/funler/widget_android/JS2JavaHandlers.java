@@ -24,18 +24,6 @@ public enum JS2JavaHandlers {
         function.onCallBack("true");
     }),
 
-    collapse((Context context, String data, CallBackFunction function) -> {
-        Log.d(getTag(), "collapse, data: " + data);
-        WidgetView.getInstance().collapse();
-        function.onCallBack(null);
-    }),
-
-    expand((Context context, String data, CallBackFunction function) -> {
-        Log.d(getTag(), "expand, data: " + data);
-        WidgetView.getInstance().expand();
-        function.onCallBack(null);
-    }),
-
     restore((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "restore, data: " + data);
         WidgetView.getInstance().restore();
