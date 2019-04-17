@@ -190,15 +190,14 @@ public class WidgetView {
     }
 
     /**
-     * Sends data to {@code WidgetView} field on SignUp/SignIn pages. For example, you know user email
+     * Sends email to {@code WidgetView} field on SignUp/SignIn pages. For example, you know user email
      * and don't want to let user enter his email again. So, you can do that for user by invoking this
      * method.
-     * @param fieldName The field name you want to populate. Examples: "email", "password".
      * @param value The field value.
      * @return current instance of {@code WidgetView}.
      */
-    public WidgetView sendDataToField(String fieldName, String value) {
-        putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'" + fieldName + "', '" + value + "'"));
+    public WidgetView setEmail(String value) {
+        putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'email', " + "'" + value + "'"));
         return this;
     }
 
