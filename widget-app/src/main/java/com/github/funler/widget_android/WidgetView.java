@@ -202,18 +202,6 @@ public class WidgetView {
         return this;
     }
 
-    /**
-     * Switches {@code WidgetView} mode.
-     * @param mode Current available modes are: WidgetMode.LOGIN, WidgetView.REWARDS.
-     * @return current instance of {@code WidgetView}.
-     */
-    public WidgetView setMode(WidgetMode mode) {
-        this.mode = mode;
-
-        putOrProcessHandler(() -> callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'"));
-        return this;
-    }
-
     public WidgetView setUserData(JSONObject jsonObject) {
         putOrProcessHandler(() -> callWidgetJavascript("setUserData", jsonObject.toString()));
         return this;
@@ -587,6 +575,13 @@ public class WidgetView {
         Intent intent = new Intent(getContext(), WidgetViewActivity.class);
         getContext().startActivity(intent);
         callWidgetJavascript("__showOnNative", null);
+        return this;
+    }
+
+    WidgetView setMode(WidgetMode mode) {
+        this.mode = mode;
+
+        putOrProcessHandler(() -> callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'"));
         return this;
     }
 
