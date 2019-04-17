@@ -33,18 +33,13 @@ Then rebuild your project.
 
 Firstly you need init it:
 ```java
-  List<String> sections = new ArrayList<>();
-  sections.add("secion_1");
-  sections.add("secion_2");
-  sections.add("secion_3");
-
   WidgetView widgetView = new WidgetView(context);
-  widgetView.init("YOUR_APP_ID", "YOUR_USER_ID", sections);
+  widgetView.init("YOUR_APP_ID");
 ```
 
 Then you can simply call somewhere in your code:
 ```java
-  widgetView.show();
+  widgetView.show("YOUR_PLACEMENT");
 ```
 
 For more info read our [JavaDoc](https://funler.github.io/widget-android/)
