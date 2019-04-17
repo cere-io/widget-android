@@ -23,7 +23,6 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
 import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
 
 /**
  * This is the main class which incapsulates all logic (opening/closing activity etc) and
@@ -59,7 +58,7 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *     <pre>
  *         {@code
  *              widgetView.onInitializationFinished(() -> {
- *                  widgetView.show();
+ *                  widgetView.show("YOUR_PLACEMENT");
  *              });
  *         }
  *     </pre>
@@ -71,7 +70,7 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *     <pre>
  *         {@code
  *              button.setOnClickListener(view -> {
- *                  widgetView.show();
+ *                  widgetView.show("YOUR_PLACEMENT");
  *              });
  *         }
  *     </pre>
@@ -206,6 +205,11 @@ public class WidgetView {
         return this;
     }
 
+    /**
+     * Returns is {@code WidgetView} has reward items or social tasks for given placement.
+     * @param placement Placement.
+     * @return boolean.
+     */
     public boolean hasItems(String placement) {
         if (engagementMap.containsKey(placement)) {
             return engagementMap.get(placement).getRewardItems().size() > 0 ||
@@ -215,6 +219,10 @@ public class WidgetView {
         return false;
     }
 
+    /**
+     * Returns a {@code Set} of available placements.
+     * @return Set of available placements.
+     */
     public Set<String> getPlacements() {
         return engagementMap.keySet();
     }
@@ -230,6 +238,7 @@ public class WidgetView {
 
     /**
      * Opens {@code WidgetView} with given placement.
+     * @param placement Placement configured in RMS.
      * @return current instance of {@code WidgetView}.
      */
     public WidgetView show(String placement) {
@@ -248,15 +257,6 @@ public class WidgetView {
 
         getContext().sendBroadcast(new Intent(close_widget_view.name()));
 
-        return this;
-    }
-
-    /**
-     * Returns Widget to initial size.
-     * @return current instance of {@code WidgetView}.
-     */
-    public WidgetView restore() {
-        getContext().sendBroadcast(new Intent(restore_widget_view.name()));
         return this;
     }
 
