@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class WidgetUser {
+public class User {
 
     private String id;
     private String email;
@@ -20,7 +20,7 @@ public class WidgetUser {
         return id;
     }
 
-    public WidgetUser setId(String id) {
+    public User setId(String id) {
         this.id = id;
         return this;
     }
@@ -29,7 +29,7 @@ public class WidgetUser {
         return email;
     }
 
-    public WidgetUser setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -38,7 +38,7 @@ public class WidgetUser {
         return token;
     }
 
-    public WidgetUser setToken(String token) {
+    public User setToken(String token) {
         this.token = token;
         return this;
     }
@@ -47,7 +47,7 @@ public class WidgetUser {
         return extras;
     }
 
-    public WidgetUser setExtras(Map<String, String> extras) {
+    public User setExtras(Map<String, String> extras) {
         this.extras = extras;
         return this;
     }
@@ -56,7 +56,7 @@ public class WidgetUser {
         return password;
     }
 
-    public WidgetUser setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
         return this;
     }
@@ -83,8 +83,8 @@ public class WidgetUser {
         return json;
     }
 
-    public static WidgetUser fromJson(String json) throws JSONException {
-        WidgetUser user = new WidgetUser();
+    public static User fromJson(String json) throws JSONException {
+        User user = new User();
 
         JSONObject jsonObject = new JSONObject(json);
         user.setId(jsonObject.optString("id"));

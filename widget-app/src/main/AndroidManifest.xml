@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.github.funler.widget_android">
+    package="io.cere.rewards_module">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,11 +10,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
-            android:name="com.github.funler.widget_android.WidgetViewActivity"
+            android:name="io.cere.rewards_module.RewardsModuleActivity"
             android:theme="@style/CRBWidget">
         </activity>
 
-        <receiver android:name=".ReferrerReceiver"
+        <receiver android:name="io.cere.rewards_module.ReferrerReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER"/>

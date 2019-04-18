@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.github.funler.jsbridge.BridgeWebView;
+import com.cere.funler.jsbridge.BridgeWebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,10 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
+import io.cere.rewards_module.models.ClaimedReward;
+import io.cere.rewards_module.models.Engagement;
+import io.cere.rewards_module.models.User;
+import io.cere.rewards_module.models.RMSData;
+
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.close_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.initialized_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.input_blurred;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.input_focused;
 
 /**
  * This is the main class which incapsulates all logic (opening/closing activity etc) and
@@ -30,35 +35,35 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *
  * <p>Almost all methods of this class supports "method chaining".</p>
  *
- * <p>All you need to start working with the class is to instantiate <tt>WidgetView</tt> once and
+ * <p>All you need to start working with the class is to instantiate <tt>RewardsModule</tt> once and
  * initialize it with few required params. Example:
  * </p>
  *
  * <p>
  *     <pre>
  *         {@code
- *              WidgetView widgetView = new WidgetView(context);
- *              widgetView.init("YOUR_APP_ID");
+ *              RewardsModule rewardsModule = new RewardsModule(context);
+ *              rewardsModule.init("YOUR_APP_ID");
  *         }
  *     </pre>
  * </p>
  *
- * <p>That's enough for start loading {@code WidgetView}, but note that {@code WidgetView} still
- * remains hidden. Also, first load of {@code WidgetView} takes a some time which depends on
- * network connection quality. That's why you need to init {@code WidgetView} as soon as possible.
+ * <p>That's enough for start loading {@code RewardsModule}, but note that {@code RewardsModule} still
+ * remains hidden. Also, first load of {@code RewardsModule} takes a some time which depends on
+ * network connection quality. That's why you need to init {@code RewardsModule} as soon as possible.
  * Next initializations after opening app again will be faster because of caching.
  * </p>
  *
- * <p>If you want to show {@code WidgetView} right after it has initialized, you can add listener
+ * <p>If you want to show {@code RewardsModule} right after it has initialized, you can add listener
  * {@see OnInitializationHandler} implementation which will invoke method <tt>show</tt> on
- * {@code WidgetView} instance. Example:
+ * {@code RewardsModule} instance. Example:
  * </p>
  *
  * <p>
  *     <pre>
  *         {@code
- *              widgetView.onInitializationFinished(() -> {
- *                  widgetView.show("YOUR_PLACEMENT");
+ *              rewardsModule.onInitializationFinished(() -> {
+ *                  rewardsModule.show("YOUR_PLACEMENT");
  *              });
  *         }
  *     </pre>
@@ -70,7 +75,7 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *     <pre>
  *         {@code
  *              button.setOnClickListener(view -> {
- *                  widgetView.show("YOUR_PLACEMENT");
+ *                  rewardsModule.show("YOUR_PLACEMENT");
  *              });
  *         }
  *     </pre>
@@ -78,23 +83,23 @@ import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents
  *
  * @author  Mikhail Chachkouski
  *
- * Also see another callbacks you can provide to {@code WidgetView}:
+ * Also see another callbacks you can provide to {@code RewardsModule}:
  * @see OnSignInHandler
  * @see OnSignUpHandler
  * @see OnGetClaimedRewardsHandler
  * @see OnGetUserByEmailHandler
  * @see OnInitializationHandler
  */
-public class WidgetView {
+public class RewardsModule {
 
     static final String KEY_STORAGE = "storage";
     static final String KEY_REFERRER = "referrer";
 
-    private static String TAG = "WidgetView";
-    private static WidgetView INSTANCE;
+    private static String TAG = "RewardsModule";
+    private static RewardsModule INSTANCE;
 
-    private WidgetEnv env = WidgetEnv.PRODUCTION;
-    private WidgetMode mode = WidgetMode.REWARDS;
+    private Env env = Env.PRODUCTION;
+    private Mode mode = Mode.REWARDS;
     private Map<String, Engagement> engagementMap = new HashMap<>();
 
     private String appId = "";
@@ -114,8 +119,8 @@ public class WidgetView {
     private double leftPercentage = 0;
     private boolean isMaximized = false;
 
-    OnSignInHandler onSignInHandler = user -> setMode(WidgetMode.REWARDS);
-    OnSignUpHandler onSignUpHandler = user -> setMode(WidgetMode.REWARDS);
+    OnSignInHandler onSignInHandler = user -> setMode(Mode.REWARDS);
+    OnSignUpHandler onSignUpHandler = user -> setMode(Mode.REWARDS);
     OnGetClaimedRewardsHandler onGetClaimedRewardsHandler = callback -> callback.handle(Collections.EMPTY_LIST);
     OnGetUserByEmailHandler onGetUserByEmailHandler = (email, callback) -> callback.handle(false);
     OnInitializationHandler onInitializationHandler = () -> {};
@@ -123,23 +128,23 @@ public class WidgetView {
     private OnHideHandler onHideHandler = null;
 
     /**
-     * Initializes a newly created {@code WidgetView} object without initialization.
+     * Initializes a newly created {@code RewardsModule} object without initialization.
      * @param context Context - Interface to global information about an application environment.
      */
-    public WidgetView(Context context) {
+    public RewardsModule(Context context) {
         this.context = context;
         configureWebView();
         INSTANCE = this;
     }
 
     /**
-     * Initializes a newly created {@code WidgetView} object without initialization,
+     * Initializes a newly created {@code RewardsModule} object without initialization,
      * but with desired width and height.
      * @param context Context - Interface to global information about an application environment.
-     * @param widthInPercents desired width for {@code WidgetView} in percents.
-     * @param heightInPercents desired height for {@code WidgetView} in percents.
+     * @param widthInPercents desired width for {@code RewardsModule} in percents.
+     * @param heightInPercents desired height for {@code RewardsModule} in percents.
      */
-    public WidgetView(Context context, float widthInPercents, float heightInPercents) {
+    public RewardsModule(Context context, float widthInPercents, float heightInPercents) {
         this.context = context;
         setWidth(widthInPercents);
         setHeight(heightInPercents);
@@ -148,15 +153,15 @@ public class WidgetView {
     }
 
     /**
-     * Initializes a newly created {@code WidgetView} object without initialization,
+     * Initializes a newly created {@code RewardsModule} object without initialization,
      * but with desired width and height.
      * @param context Context - Interface to global information about an application environment.
-     * @param widthInPercents desired width for {@code WidgetView} in percents.
-     * @param heightInPercents desired height for {@code WidgetView} in percents.
-     * @param topInPercents desired top margin for {@code WidgetView} in percents.
-     * @param leftInPercents desired left margin for {@code WidgetView} in percents.
+     * @param widthInPercents desired width for {@code RewardsModule} in percents.
+     * @param heightInPercents desired height for {@code RewardsModule} in percents.
+     * @param topInPercents desired top margin for {@code RewardsModule} in percents.
+     * @param leftInPercents desired left margin for {@code RewardsModule} in percents.
      */
-    public WidgetView(Context context, float widthInPercents, float heightInPercents, float topInPercents, float leftInPercents) {
+    public RewardsModule(Context context, float widthInPercents, float heightInPercents, float topInPercents, float leftInPercents) {
         this.context = context;
         setWidth(widthInPercents);
         setHeight(heightInPercents);
@@ -175,10 +180,10 @@ public class WidgetView {
     /**
      * Initializes and loads Widget. Note, that after initialization Widget is still invisible.
      * @param appId Application ID from RMS.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView init(String appId) {
-        return init(appId, WidgetEnv.PRODUCTION);
+    public RewardsModule init(String appId) {
+        return init(appId, Env.PRODUCTION);
     }
 
     /**
@@ -189,24 +194,24 @@ public class WidgetView {
     }
 
     /**
-     * Sends email to {@code WidgetView} field on SignUp/SignIn pages. For example, you know user email
+     * Sends email to {@code RewardsModule} field on SignUp/SignIn pages. For example, you know user email
      * and don't want to let user enter his email again. So, you can do that for user by invoking this
      * method.
      * @param value The field value.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView setEmail(String value) {
+    public RewardsModule setEmail(String value) {
         putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'email', " + "'" + value + "'"));
         return this;
     }
 
-    public WidgetView setUserData(JSONObject jsonObject) {
+    public RewardsModule setUserData(JSONObject jsonObject) {
         putOrProcessHandler(() -> callWidgetJavascript("setUserData", jsonObject.toString()));
         return this;
     }
 
     /**
-     * Returns is {@code WidgetView} has reward items or social tasks for given placement.
+     * Returns is {@code RewardsModule} has reward items or social tasks for given placement.
      * @param placement Placement.
      * @return boolean.
      */
@@ -228,29 +233,29 @@ public class WidgetView {
     }
 
     /**
-     * Opens {@code WidgetView} in on boarding mode .
-     * @return current instance of {@code WidgetView}.
+     * Opens {@code RewardsModule} in on boarding mode .
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView showOnBoarding() {
+    public RewardsModule showOnBoarding() {
         callWidgetJavascript("showOnBoarding", null);
         return this;
     }
 
     /**
-     * Opens {@code WidgetView} with given placement.
+     * Opens {@code RewardsModule} with given placement.
      * @param placement Placement configured in RMS.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView show(String placement) {
+    public RewardsModule show(String placement) {
         callWidgetJavascript("show", "'" + placement + "'");
         return this;
     }
 
     /**
      * Closes Widget.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView hide() {
+    public RewardsModule hide() {
         if (onHideHandler != null) {
             onHideHandler.handle();
         }
@@ -261,75 +266,75 @@ public class WidgetView {
     }
 
     /**
-     * Set desired width for {@code WidgetView} in percents.
+     * Set desired width for {@code RewardsModule} in percents.
      * @param widthInPercents value in percents.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView setWidth(double widthInPercents) {
+    public RewardsModule setWidth(double widthInPercents) {
         this.widthPercentage = widthInPercents;
-        setWidthPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), widthInPercents)));
+        setWidthPx((int) Math.round(Util.pxWidthFromPercents(getContext(), widthInPercents)));
         return this;
     }
 
     /**
-     * Set desired height for {@code WidgetView} in percents.
+     * Set desired height for {@code RewardsModule} in percents.
      * @param heightInPercents value in percents.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView setHeight(double heightInPercents) {
+    public RewardsModule setHeight(double heightInPercents) {
         this.heightPercentage = heightInPercents;
-        setHeightPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), heightInPercents)));
+        setHeightPx((int) Math.round(Util.pxHeightFromPercents(getContext(), heightInPercents)));
         return this;
     }
 
     /**
-     * Set desired top margin for {@code WidgetView} in percents.
+     * Set desired top margin for {@code RewardsModule} in percents.
      * @param topInPercents value in percents.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView setTop(double topInPercents) {
+    public RewardsModule setTop(double topInPercents) {
         this.topPercentage = topInPercents;
-        setTopPx((int) Math.round(WidgetUtil.pxHeightFromPercents(getContext(), topInPercents)));
+        setTopPx((int) Math.round(Util.pxHeightFromPercents(getContext(), topInPercents)));
         return this;
     }
 
     /**
-     * Set desired left margin for {@code WidgetView} in percents.
+     * Set desired left margin for {@code RewardsModule} in percents.
      * @param leftInPercents value in percents.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView setLeft(double leftInPercents) {
+    public RewardsModule setLeft(double leftInPercents) {
         this.leftPercentage = leftInPercents;
-        setLeftPx((int) Math.round(WidgetUtil.pxWidthFromPercents(getContext(), leftInPercents)));
+        setLeftPx((int) Math.round(Util.pxWidthFromPercents(getContext(), leftInPercents)));
         return this;
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView} hide method.
+     * Optional callback which will be fired after {@code RewardsModule} hide method.
      * @param handler instance of {@code OnHideHandler}.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onHide(OnHideHandler handler) {
+    public RewardsModule onHide(OnHideHandler handler) {
         onHideHandler = handler;
         return this;
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView} finished sign up.
+     * Optional callback which will be fired after {@code RewardsModule} finished sign up.
      * @param handler instance of {@code OnSignUpHandler}.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onSignUp(OnSignUpHandler handler) {
+    public RewardsModule onSignUp(OnSignUpHandler handler) {
         onSignUpHandler = handler;
         return this;
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView} finished sign in.
+     * Optional callback which will be fired after {@code RewardsModule} finished sign in.
      * @param handler instance of {@code OnSignInHandler}.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onSignIn(OnSignInHandler handler) {
+    public RewardsModule onSignIn(OnSignInHandler handler) {
         onSignInHandler = handler;
         return this;
     }
@@ -337,9 +342,9 @@ public class WidgetView {
     /**
      * Optional callback which should return {@code List<ClaimedReward>} which user already bought.
      * @param handler instance of {@code OnGetClaimedRewardsHandler}.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
+    public RewardsModule onGetClaimedRewards(OnGetClaimedRewardsHandler handler) {
         onGetClaimedRewardsHandler = handler;
         return this;
     }
@@ -347,19 +352,19 @@ public class WidgetView {
     /**
      * Optional callback which should return is user already exists in your system.
      * @param handler instance of {@code OnGetUserByEmailHandler}
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onGetUserByEmail(OnGetUserByEmailHandler handler) {
+    public RewardsModule onGetUserByEmail(OnGetUserByEmailHandler handler) {
         onGetUserByEmailHandler = handler;
         return this;
     }
 
     /**
-     * Optional callback which will be fired after {@code WidgetView} initialized.
+     * Optional callback which will be fired after {@code RewardsModule} initialized.
      * @param handler instance of {@code OnInitializationHandler}.
-     * @return current instance of {@code WidgetView}.
+     * @return current instance of {@code RewardsModule}.
      */
-    public WidgetView onInitializationFinished(OnInitializationHandler handler) {
+    public RewardsModule onInitializationFinished(OnInitializationHandler handler) {
         onInitializationHandler = handler;
         return this;
     }
@@ -368,14 +373,14 @@ public class WidgetView {
      * Interface used to callback after sign in.
      */
     public interface OnSignInHandler {
-        void handle(WidgetUser user);
+        void handle(User user);
     }
 
     /**
      * Interface used to callback after sign up.
      */
     public interface OnSignUpHandler {
-        void handle(WidgetUser user);
+        void handle(User user);
     }
 
     /**
@@ -401,14 +406,14 @@ public class WidgetView {
     }
 
     /**
-     * Interface used after {@code WidgetView} hide method.
+     * Interface used after {@code RewardsModule} hide method.
      */
     public interface OnHideHandler {
         void handle();
     }
 
     /**
-     * Interface used after {@code WidgetView} init method.
+     * Interface used after {@code RewardsModule} init method.
      */
     public interface OnInitializationHandler {
         void handle();
@@ -422,7 +427,7 @@ public class WidgetView {
         prefs.apply();
     }
 
-    protected static WidgetView getInstance() {
+    protected static RewardsModule getInstance() {
         return INSTANCE;
     }
 
@@ -432,7 +437,7 @@ public class WidgetView {
 
     protected boolean isInitialized() { return initialized; }
 
-    protected void setInitialized(boolean initialized, WidgetRMSData data) {
+    protected void setInitialized(boolean initialized, RMSData data) {
         if (this.initialized != initialized) {
             this.initialized = initialized;
             getContext().sendBroadcast(new Intent(initialized_widget_view.name()));
@@ -484,7 +489,7 @@ public class WidgetView {
         bridgeWebView.loadUrl(jsCommand);
     }
 
-    private WidgetView reload() {
+    private RewardsModule reload() {
         initialized = false;
         clear();
         configureWebView();
@@ -504,12 +509,12 @@ public class WidgetView {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
 
-        for (WidgetUserDefinedHandlers handler : WidgetUserDefinedHandlers.values()) {
+        for (UserDefinedHandlers handler : UserDefinedHandlers.values()) {
             bridgeWebView.registerHandler(handler.name(), handler.handler());
         }
     }
 
-    private WidgetView load() {
+    private RewardsModule load() {
         bridgeWebView.loadUrl(this.env.widgetURL() + "/native.html?" +
                 "platform=android" +
                 "&v=" + BuildConfig.VERSION_NAME +
@@ -570,14 +575,14 @@ public class WidgetView {
         getContext().sendBroadcast(new Intent(input_blurred.name()));
     }
 
-    WidgetView show() {
-        Intent intent = new Intent(getContext(), WidgetViewActivity.class);
+    RewardsModule show() {
+        Intent intent = new Intent(getContext(), RewardsModuleActivity.class);
         getContext().startActivity(intent);
         callWidgetJavascript("__showOnNative", null);
         return this;
     }
 
-    WidgetView setMode(WidgetMode mode) {
+    RewardsModule setMode(Mode mode) {
         this.mode = mode;
 
         putOrProcessHandler(() -> callWidgetJavascript("setMode", "'" + mode.toString().toLowerCase() + "'"));
@@ -597,7 +602,7 @@ public class WidgetView {
         }
     }
 
-    private WidgetView init(String appId, WidgetEnv env) {
+    private RewardsModule init(String appId, Env env) {
         this.appId = appId;
         this.env = env;
         load();

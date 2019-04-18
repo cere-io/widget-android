@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class Engagement {
+public class Engagement {
     private int id;
     private int campaignId;
     private int placementId;

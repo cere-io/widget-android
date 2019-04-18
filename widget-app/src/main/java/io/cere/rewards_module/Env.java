@@ -1,6 +1,6 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
-public enum WidgetEnv {
+public enum Env {
     DEVELOPMENT("", ""),
     LOCAL("http://192.168.100.11:3011", "http://192.168.100.11:3002"),
     DEV1("https://widget-sdk.dev.cere.io", "https://widget.dev.cere.io"),
@@ -10,7 +10,7 @@ public enum WidgetEnv {
     private String sdkURL;
     private String widgetURL;
 
-    WidgetEnv(String sdkURL, String widgetURL) {
+    Env(String sdkURL, String widgetURL) {
         this.sdkURL = sdkURL;
         this.widgetURL = widgetURL;
     }

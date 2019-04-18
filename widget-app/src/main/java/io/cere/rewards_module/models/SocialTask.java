@@ -1,9 +1,9 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class SocialTask {
+public class SocialTask {
     private int id;
 
 

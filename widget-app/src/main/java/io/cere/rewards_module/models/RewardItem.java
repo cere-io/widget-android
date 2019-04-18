@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class RewardItem {
+public class RewardItem {
     private int id;
     private List<Map<String, String>> params = Collections.EMPTY_LIST;
 
