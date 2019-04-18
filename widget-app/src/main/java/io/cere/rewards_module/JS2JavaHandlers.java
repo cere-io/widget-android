@@ -8,8 +8,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cere.funler.jsbridge.BridgeHandler;
-import com.cere.funler.jsbridge.CallBackFunction;
+import com.github.funler.jsbridge.BridgeHandler;
+import com.github.funler.jsbridge.CallBackFunction;
 
 import org.json.JSONException;
 import org.json.JSONObject;

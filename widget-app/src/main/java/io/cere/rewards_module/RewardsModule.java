@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.cere.funler.jsbridge.BridgeWebView;
+import com.github.funler.jsbridge.BridgeWebView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
