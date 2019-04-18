@@ -1,4 +1,4 @@
-# Rewards Widget SDK for Android
+# Rewards Module SDK for Android
 
 ## Including into project
 
@@ -23,7 +23,7 @@ dependencies {
   ...your dependencies
 
   // add this
-  implementation 'com.github.funler:widget-android:1.0.*'
+  implementation 'io.cere.rewards_module:2.0.*'
 }
 ```
 
@@ -33,13 +33,13 @@ Then rebuild your project.
 
 Firstly you need init it:
 ```java
-  WidgetView widgetView = new WidgetView(context);
-  widgetView.init("YOUR_APP_ID");
+  RewardsModule rewardsModule = new RewardsModule(context);
+  rewardsModule.init("YOUR_APP_ID");
 ```
 
 Then you can simply call somewhere in your code:
 ```java
-  widgetView.show("YOUR_PLACEMENT");
+  rewardsModule.show("YOUR_PLACEMENT");
 ```
 
 For more info read our [JavaDoc](https://funler.github.io/widget-android/)
