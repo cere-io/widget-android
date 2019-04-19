@@ -42,4 +42,4 @@ Then you can simply call somewhere in your code:
   rewardsModule.show("YOUR_PLACEMENT");
 ```
 
-For more info read our [JavaDoc](https://funler.github.io/widget-android/)
+For more info read our [JavaDoc](https://cere-io.github.io/widget-android/)
