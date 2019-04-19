@@ -236,8 +236,8 @@ public class RewardsModule {
      * Opens {@code RewardsModule} in on boarding mode .
      * @return current instance of {@code RewardsModule}.
      */
-    public RewardsModule showOnBoarding() {
-        callWidgetJavascript("showOnBoarding", null);
+    public RewardsModule showOnboarding() {
+        callWidgetJavascript("showOnboarding", null);
         return this;
     }
 
