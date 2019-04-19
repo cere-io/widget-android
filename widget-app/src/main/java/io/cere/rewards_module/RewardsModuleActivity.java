@@ -16,8 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.cere.funler.jsbridge.BridgeWebView;
-import io.cere.rewards_module.R;
+import com.github.funler.jsbridge.BridgeWebView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.close_widget_view;
