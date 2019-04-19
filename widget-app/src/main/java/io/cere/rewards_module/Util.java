@@ -1,11 +1,11 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
-class WidgetUtil {
+class Util {
     static double dpFromPx(Context context, double px) {
         return px / context.getResources().getDisplayMetrics().density;
     }

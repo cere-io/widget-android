@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
-import static com.github.funler.widget_android.WidgetView.KEY_REFERRER;
-import static com.github.funler.widget_android.WidgetView.KEY_STORAGE;
+import static io.cere.rewards_module.RewardsModule.KEY_REFERRER;
+import static io.cere.rewards_module.RewardsModule.KEY_STORAGE;
 
 public class ReferrerReceiver extends BroadcastReceiver {
 

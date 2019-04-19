@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,49 +14,33 @@ import com.github.funler.jsbridge.CallBackFunction;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.github.funler.widget_android.WidgetView.KEY_REFERRER;
-import static com.github.funler.widget_android.WidgetView.KEY_STORAGE;
+import io.cere.rewards_module.models.RMSData;
+
+import static io.cere.rewards_module.RewardsModule.KEY_REFERRER;
+import static io.cere.rewards_module.RewardsModule.KEY_STORAGE;
 
 public enum JS2JavaHandlers {
     logout((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "logout");
-        WidgetView.getInstance().logout();
+        RewardsModule.getInstance().logout();
         function.onCallBack("true");
-    }),
-
-    collapse((Context context, String data, CallBackFunction function) -> {
-        Log.d(getTag(), "collapse, data: " + data);
-        WidgetView.getInstance().collapse();
-        function.onCallBack(null);
-    }),
-
-    expand((Context context, String data, CallBackFunction function) -> {
-        Log.d(getTag(), "expand, data: " + data);
-        WidgetView.getInstance().expand();
-        function.onCallBack(null);
-    }),
-
-    restore((Context context, String data, CallBackFunction function) -> {
-        Log.d(getTag(), "restore, data: " + data);
-        WidgetView.getInstance().restore();
-        function.onCallBack(null);
     }),
 
     show((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "show");
-        WidgetView.getInstance().show();
+        RewardsModule.getInstance().show();
         function.onCallBack(null);
     }),
 
     hide((Context context, String data, CallBackFunction function) -> {
         Log.d(getTag(), "hide");
-        WidgetView.getInstance().hide();
+        RewardsModule.getInstance().hide();
         function.onCallBack(null);
     }),
 
     initialized((Context context, String data, CallBackFunction function) -> {
         try {
-            WidgetView.getInstance().setInitialized(true, WidgetRMSData.fromJSON(data));
+            RewardsModule.getInstance().setInitialized(true, RMSData.fromJSON(data));
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {
@@ -121,12 +105,12 @@ public enum JS2JavaHandlers {
     }),
 
     inputFocused((Context context, String data, CallBackFunction function) -> {
-        WidgetView.getInstance().inputFocused(Float.parseFloat(data));
+        RewardsModule.getInstance().inputFocused(Float.parseFloat(data));
         function.onCallBack(null);
     }),
 
     inputBlurred((Context context, String data, CallBackFunction function) -> {
-        WidgetView.getInstance().inputBlurred();
+        RewardsModule.getInstance().inputBlurred();
         function.onCallBack(null);
     });
 

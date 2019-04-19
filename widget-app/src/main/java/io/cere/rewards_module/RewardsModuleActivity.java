@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.animation.LayoutTransition;
 import android.content.BroadcastReceiver;
@@ -16,26 +16,22 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.github.funler.jsbridge.BridgeWebView;
+import com.cere.funler.jsbridge.BridgeWebView;
+import io.cere.rewards_module.R;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.github.funler.widget_android.WidgetUtil.dpFromPx;
-import static com.github.funler.widget_android.WidgetUtil.getMetrics;
-import static com.github.funler.widget_android.WidgetUtil.pxFromDp;
-import static com.github.funler.widget_android.WidgetUtil.pxHeightFromPercents;
-import static com.github.funler.widget_android.WidgetUtil.pxWidthFromPercents;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.close_widget_view;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.initialized_widget_view;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_blurred;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.input_focused;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.maximize_widget_view;
-import static com.github.funler.widget_android.WidgetViewActivity.ActivityEvents.restore_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.close_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.initialized_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.input_blurred;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.input_focused;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.maximize_widget_view;
+import static io.cere.rewards_module.RewardsModuleActivity.ActivityEvents.restore_widget_view;
 
-public class WidgetViewActivity extends AppCompatActivity {
+public class RewardsModuleActivity extends AppCompatActivity {
 
     private BridgeWebView bridgeWebView;
     private RelativeLayout root;
-    private WidgetView widgetView = WidgetView.getInstance();
+    private RewardsModule rewardsModule = RewardsModule.getInstance();
     private final int LEFT_RIGHT_MARGIN = 5;
     private final int TOP_BOTTOM_MARGIN = 5;
 
@@ -52,7 +48,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver maximizeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            widgetView.setMaximized(true);
+            rewardsModule.setMaximized(true);
             maximize();
         }
     };
@@ -60,7 +56,7 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver restoreReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            widgetView.setMaximized(false);
+            rewardsModule.setMaximized(false);
             minimize();
         }
     };
@@ -68,8 +64,8 @@ public class WidgetViewActivity extends AppCompatActivity {
     private final BroadcastReceiver focusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            double windowHeight = dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
-            double webViewHeight = dpFromPx(getBaseContext(), bridgeWebView.getHeight());
+            double windowHeight = Util.dpFromPx(getBaseContext(), getWindow().getDecorView().getHeight());
+            double webViewHeight = Util.dpFromPx(getBaseContext(), bridgeWebView.getHeight());
             double margin = (windowHeight - webViewHeight);
 
             double y = intent.getExtras().getFloat("y") + margin;
@@ -78,7 +74,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
             if (y > visibleHeight) {
                 double newY = visibleHeight - y - (margin / 2);
-                bridgeWebView.animate().translationY((int) pxFromDp(getBaseContext(), newY)).start();
+                bridgeWebView.animate().translationY((int) Util.pxFromDp(getBaseContext(), newY)).start();
             }
         }
     };
@@ -113,9 +109,9 @@ public class WidgetViewActivity extends AppCompatActivity {
         root = findViewById(R.id.root);
         root.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
 
-        bridgeWebView = widgetView.getBridgeWebView();
+        bridgeWebView = rewardsModule.getBridgeWebView();
 
-        if (widgetView.isInitialized()) {
+        if (rewardsModule.isInitialized()) {
             attachBridgetView();
         } else {
             RelativeLayout cereLogoLayout = findViewById(R.id.cere_logo_layout);
@@ -136,7 +132,7 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        widgetView.inputBlurred();
+        rewardsModule.inputBlurred();
     }
 
     private void makeFullScreenWithoutSystemUI() {
@@ -171,14 +167,14 @@ public class WidgetViewActivity extends AppCompatActivity {
     }
 
     private void configureInitialSize() {
-        DisplayMetrics metrics = getMetrics(getBaseContext());
+        DisplayMetrics metrics = Util.getMetrics(getBaseContext());
 
-        if (widgetView.getWidthPx() == 0) {
-            widgetView.setWidthPx(metrics.widthPixels - (int) Math.round(pxWidthFromPercents(getBaseContext(), LEFT_RIGHT_MARGIN)));
-            widgetView.setHeightPx(metrics.heightPixels - (int) Math.round(pxHeightFromPercents(getBaseContext(), TOP_BOTTOM_MARGIN)));
+        if (rewardsModule.getWidthPx() == 0) {
+            rewardsModule.setWidthPx(metrics.widthPixels - (int) Math.round(Util.pxWidthFromPercents(getBaseContext(), LEFT_RIGHT_MARGIN)));
+            rewardsModule.setHeightPx(metrics.heightPixels - (int) Math.round(Util.pxHeightFromPercents(getBaseContext(), TOP_BOTTOM_MARGIN)));
         }
 
-        if (widgetView.isMaximized()) {
+        if (rewardsModule.isMaximized()) {
             maximize();
         } else {
             minimize();
@@ -219,10 +215,10 @@ public class WidgetViewActivity extends AppCompatActivity {
 
     private void minimize() {
         updateLayoutParams(
-                widgetView.getWidthPx(),
-                widgetView.getHeightPx(),
-                widgetView.getTopPx(),
-                widgetView.getLeftPx()
+                rewardsModule.getWidthPx(),
+                rewardsModule.getHeightPx(),
+                rewardsModule.getTopPx(),
+                rewardsModule.getLeftPx()
         );
     }
 

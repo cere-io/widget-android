@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/github/funler/widget_android/WidgetView.html" target="_top">Frames</a></li>
@@ -90,7 +90,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">com.github.funler.widget_android</div>
+<div class="subTitle">com.cere.rewards_module</div>
 <h2 title="Class WidgetView" class="title">Class WidgetView</h2>
 </div>
 <div class="contentContainer">
@@ -98,7 +98,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>com.github.funler.widget_android.WidgetView</li>
+<li>com.cere.rewards_module.RewardsModule</li>
 </ul>
 </li>
 </ul>
@@ -126,8 +126,8 @@ extends java.lang.Object</pre>
               sections.add("YOUR_SECTION_2");
               sections.add("YOUR_SECTION_3");
 
-              WidgetView widgetView = new WidgetView(context);
-              widgetView.init("YOUR_APP_ID", sections);
+              WidgetView rewardsModule = new WidgetView(context);
+              rewardsModule.init("YOUR_APP_ID", sections);
          </code>
      </pre>
  </p>
@@ -137,8 +137,8 @@ extends java.lang.Object</pre>
  <p>
      <pre>
          <code>
-              WidgetView widgetView = new WidgetView(context);
-              widgetView.init("YOUR_APP_ID");
+              WidgetView rewardsModule = new WidgetView(context);
+              rewardsModule.init("YOUR_APP_ID");
          </code>
      </pre>
  </p>
@@ -150,15 +150,15 @@ extends java.lang.Object</pre>
  </p>
 
  <p>If you want to show <code>WidgetView</code> right after it has initialized, you can add listener
- <a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnInitializationHandler</code></a> implementation which will invoke method <tt>show</tt> on
+ <a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnInitializationHandler</code></a> implementation which will invoke method <tt>show</tt> on
  <code>WidgetView</code> instance. Example:
  </p>
 
  <p>
      <pre>
          <code>
-              widgetView.onInitializationFinished(hasItems -&gt; {
-                  widgetView.show(); // we can show widget without checking is it has rewards configured in RMS
+              rewardsModule.onInitializationFinished(hasItems -&gt; {
+                  rewardsModule.show(); // we can show widget without checking is it has rewards configured in RMS
               });
          </code>
      </pre>
@@ -167,9 +167,9 @@ extends java.lang.Object</pre>
  <p>
      <pre>
          <code>
-              widgetView.onInitializationFinished(hasItems -&gt; {
+              rewardsModule.onInitializationFinished(hasItems -&gt; {
                   if (hasItems) { // we can show empty widget if it has no rewards configured in RMS
-                      widgetView.show();
+                      rewardsModule.show();
                   }
               });
          </code>
@@ -182,18 +182,18 @@ extends java.lang.Object</pre>
      <pre>
          <code>
               button.setOnClickListener(view -&gt; {
-                  widgetView.show();
+                  rewardsModule.show();
               });
          </code>
      </pre>
  </p></div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnSignInHandler</code></a>, 
-<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnSignUpHandler</code></a>, 
-<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnGetClaimedRewardsHandler</code></a>, 
-<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnGetUserByEmailHandler</code></a>, 
-<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.github.funler.widget_android"><code>WidgetView.OnInitializationHandler</code></a></dd>
+<dd><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnSignInHandler</code></a>,
+<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnSignUpHandler</code></a>,
+<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnGetClaimedRewardsHandler</code></a>,
+<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnGetUserByEmailHandler</code></a>,
+<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.cere.rewards_module"><code>WidgetView.OnInitializationHandler</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -215,37 +215,37 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetClaimedRewardsHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetClaimedRewardsHandler</a></span></code>
 <div class="block">Interface used for getting rewards user already bought.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetUserByEmailHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetUserByEmailHandler</a></span></code>
 <div class="block">Interface used to determine is user already exists in external system.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnHideHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnHideHandler</a></span></code>
 <div class="block">Interface used after <code>WidgetView</code> hide method.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnInitializationHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnInitializationHandler</a></span></code>
 <div class="block">Interface used after <code>WidgetView</code> init method.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignInHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignInHandler</a></span></code>
 <div class="block">Interface used to callback after sign in.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignUpHandler</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignUpHandler</a></span></code>
 <div class="block">Interface used to callback after sign up.</div>
 </td>
 </tr>
@@ -284,11 +284,11 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#collapse--">collapse</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#expand--">expand</a></span>()</code>
 <div class="block">Expands Widget to Fullscreen.</div>
 </td>
@@ -300,19 +300,19 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#hide--">hide</a></span>()</code>
 <div class="block">Closes Widget.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#init-java.lang.String-">init</a></span>(java.lang.String&nbsp;appId)</code>
 <div class="block">Initializes and loads Widget.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#init-java.lang.String-java.util.List-">init</a></span>(java.lang.String&nbsp;appId,
     java.util.List&lt;java.lang.String&gt;&nbsp;sections)</code>
 <div class="block">Initializes and loads Widget.</div>
@@ -325,66 +325,66 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onGetClaimedRewards-com.github.funler.widget_android.WidgetView.OnGetClaimedRewardsHandler-">onGetClaimedRewards</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetClaimedRewardsHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onGetClaimedRewards-com.github.funler.widget_android.WidgetView.OnGetClaimedRewardsHandler-">onGetClaimedRewards</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetClaimedRewardsHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which should return <code>List&lt;ClaimedReward&gt;</code> which user already bought.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onGetUserByEmail-com.github.funler.widget_android.WidgetView.OnGetUserByEmailHandler-">onGetUserByEmail</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetUserByEmailHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onGetUserByEmail-com.github.funler.widget_android.WidgetView.OnGetUserByEmailHandler-">onGetUserByEmail</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetUserByEmailHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which should return is user already exists in your system.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onHide-com.github.funler.widget_android.WidgetView.OnHideHandler-">onHide</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnHideHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onHide-com.github.funler.widget_android.WidgetView.OnHideHandler-">onHide</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnHideHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> hide method.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onInitializationFinished-com.github.funler.widget_android.WidgetView.OnInitializationHandler-">onInitializationFinished</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnInitializationHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onInitializationFinished-com.github.funler.widget_android.WidgetView.OnInitializationHandler-">onInitializationFinished</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnInitializationHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> initialized.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onSignIn-com.github.funler.widget_android.WidgetView.OnSignInHandler-">onSignIn</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignInHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onSignIn-com.github.funler.widget_android.WidgetView.OnSignInHandler-">onSignIn</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignInHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> finished sign in.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onSignUp-com.github.funler.widget_android.WidgetView.OnSignUpHandler-">onSignUp</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignUpHandler</a>&nbsp;handler)</code>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#onSignUp-com.github.funler.widget_android.WidgetView.OnSignUpHandler-">onSignUp</a></span>(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignUpHandler</a>&nbsp;handler)</code>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> finished sign up.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#restore--">restore</a></span>()</code>
 <div class="block">Returns Widget to initial size.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#sendDataToField-java.lang.String-java.lang.String-">sendDataToField</a></span>(java.lang.String&nbsp;fieldName,
                java.lang.String&nbsp;value)</code>
 <div class="block">Sends data to <code>WidgetView</code> field on SignUp/SignIn pages.</div>
 </td>
 </tr>
 <tr id="i15" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#setMode-com.github.funler.widget_android.WidgetMode-">setMode</a></span>(com.github.funler.widget_android.WidgetMode&nbsp;mode)</code>
 <div class="block">Switches <code>WidgetView</code> mode.</div>
 </td>
 </tr>
 <tr id="i16" class="altColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#setUserData-org.json.JSONObject-">setUserData</a></span>(org.json.JSONObject&nbsp;jsonObject)</code>&nbsp;</td>
 </tr>
 <tr id="i17" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/funler/widget_android/WidgetView.html#show--">show</a></span>()</code>
 <div class="block">Opens Widget in provided <code>WidgetMode</code>.</div>
 </td>
@@ -453,7 +453,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>init</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;init(java.lang.String&nbsp;appId,
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;init(java.lang.String&nbsp;appId,
                        java.util.List&lt;java.lang.String&gt;&nbsp;sections)</pre>
 <div class="block">Initializes and loads Widget. Note, that after initialization Widget is still invisible.</div>
 <dl>
@@ -471,7 +471,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>init</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;init(java.lang.String&nbsp;appId)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;init(java.lang.String&nbsp;appId)</pre>
 <div class="block">Initializes and loads Widget. Note, that after initialization Widget is still invisible.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -497,7 +497,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>sendDataToField</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;sendDataToField(java.lang.String&nbsp;fieldName,
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;sendDataToField(java.lang.String&nbsp;fieldName,
                                   java.lang.String&nbsp;value)</pre>
 <div class="block">Sends data to <code>WidgetView</code> field on SignUp/SignIn pages. For example, you know user email
  and don't want to let user enter his email again. So, you can do that for user by invoking this
@@ -511,13 +511,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="setMode-com.github.funler.widget_android.WidgetMode-">
+<a name="setMode-com.cere.rewards_module.WidgetMode-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setMode</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;setMode(com.github.funler.widget_android.WidgetMode&nbsp;mode)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;setMode(com.github.funler.widget_android.WidgetMode&nbsp;mode)</pre>
 <div class="block">Switches <code>WidgetView</code> mode.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -533,7 +533,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>setUserData</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;setUserData(org.json.JSONObject&nbsp;jsonObject)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;setUserData(org.json.JSONObject&nbsp;jsonObject)</pre>
 </li>
 </ul>
 <a name="show--">
@@ -542,7 +542,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>show</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;show()</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;show()</pre>
 <div class="block">Opens Widget in provided <code>WidgetMode</code>. Default mode - WidgetMode.REWARDS.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -556,7 +556,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>hide</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;hide()</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;hide()</pre>
 <div class="block">Closes Widget.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -570,7 +570,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>collapse</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;collapse()</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;collapse()</pre>
 </li>
 </ul>
 <a name="expand--">
@@ -579,7 +579,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>expand</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;expand()</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;expand()</pre>
 <div class="block">Expands Widget to Fullscreen.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -593,7 +593,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>restore</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;restore()</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;restore()</pre>
 <div class="block">Returns Widget to initial size.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -601,13 +601,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onHide-com.github.funler.widget_android.WidgetView.OnHideHandler-">
+<a name="onHide-com.cere.rewards_module.RewardsModule.OnHideHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>onHide</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onHide(<a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnHideHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onHide(<a href="../../../../com/github/funler/widget_android/WidgetView.OnHideHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnHideHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> hide method.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -617,13 +617,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onSignUp-com.github.funler.widget_android.WidgetView.OnSignUpHandler-">
+<a name="onSignUp-com.cere.rewards_module.RewardsModule.OnSignUpHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>onSignUp</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onSignUp(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignUpHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onSignUp(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignUpHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignUpHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> finished sign up.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -633,13 +633,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onSignIn-com.github.funler.widget_android.WidgetView.OnSignInHandler-">
+<a name="onSignIn-com.cere.rewards_module.RewardsModule.OnSignInHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>onSignIn</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onSignIn(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnSignInHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onSignIn(<a href="../../../../com/github/funler/widget_android/WidgetView.OnSignInHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnSignInHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> finished sign in.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -649,13 +649,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onGetClaimedRewards-com.github.funler.widget_android.WidgetView.OnGetClaimedRewardsHandler-">
+<a name="onGetClaimedRewards-com.cere.rewards_module.RewardsModule.OnGetClaimedRewardsHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>onGetClaimedRewards</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onGetClaimedRewards(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetClaimedRewardsHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onGetClaimedRewards(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetClaimedRewardsHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which should return <code>List&lt;ClaimedReward&gt;</code> which user already bought.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -665,13 +665,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onGetUserByEmail-com.github.funler.widget_android.WidgetView.OnGetUserByEmailHandler-">
+<a name="onGetUserByEmail-com.cere.rewards_module.RewardsModule.OnGetUserByEmailHandler-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>onGetUserByEmail</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onGetUserByEmail(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnGetUserByEmailHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onGetUserByEmail(<a href="../../../../com/github/funler/widget_android/WidgetView.OnGetUserByEmailHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnGetUserByEmailHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which should return is user already exists in your system.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -681,13 +681,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="onInitializationFinished-com.github.funler.widget_android.WidgetView.OnInitializationHandler-">
+<a name="onInitializationFinished-com.cere.rewards_module.RewardsModule.OnInitializationHandler-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>onInitializationFinished</h4>
-<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.github.funler.widget_android">WidgetView</a>&nbsp;onInitializationFinished(<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.github.funler.widget_android">WidgetView.OnInitializationHandler</a>&nbsp;handler)</pre>
+<pre>public&nbsp;<a href="../../../../com/github/funler/widget_android/WidgetView.html" title="class in com.cere.rewards_module">WidgetView</a>&nbsp;onInitializationFinished(<a href="../../../../com/github/funler/widget_android/WidgetView.OnInitializationHandler.html" title="interface in com.cere.rewards_module">WidgetView.OnInitializationHandler</a>&nbsp;handler)</pre>
 <div class="block">Optional callback which will be fired after <code>WidgetView</code> initialized.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -724,7 +724,7 @@ extends java.lang.Object</pre>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.github.funler.widget_android"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/funler/widget_android/WidgetView.OnGetClaimedRewardsHandler.html" title="interface in com.cere.rewards_module"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/github/funler/widget_android/WidgetView.html" target="_top">Frames</a></li>

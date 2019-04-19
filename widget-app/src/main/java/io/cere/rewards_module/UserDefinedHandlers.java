@@ -1,4 +1,4 @@
-package com.github.funler.widget_android;
+package io.cere.rewards_module;
 
 import android.content.Context;
 
@@ -8,14 +8,17 @@ import com.github.funler.jsbridge.CallBackFunction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public enum WidgetUserDefinedHandlers {
+import io.cere.rewards_module.models.ClaimedReward;
+import io.cere.rewards_module.models.User;
+
+public enum UserDefinedHandlers {
 
     onGetUserByEmail((Context context, String email, CallBackFunction function) -> {
-        WidgetView.getInstance().onGetUserByEmailHandler.handle(email, exists -> function.onCallBack(exists + ""));
+        RewardsModule.getInstance().onGetUserByEmailHandler.handle(email, exists -> function.onCallBack(exists + ""));
     }),
 
     onGetClaimedRewards((Context context, String data, CallBackFunction function) -> {
-        WidgetView.getInstance().onGetClaimedRewardsHandler.handle(claimedRewards -> {
+        RewardsModule.getInstance().onGetClaimedRewardsHandler.handle(claimedRewards -> {
             if (claimedRewards == null || claimedRewards.isEmpty()) {
                 function.onCallBack("[]");
             } else {
@@ -33,7 +36,7 @@ public enum WidgetUserDefinedHandlers {
             function.onCallBack(null);
         } else {
             try {
-                WidgetView.getInstance().onSignInHandler.handle(WidgetUser.fromJson(data));
+                RewardsModule.getInstance().onSignInHandler.handle(User.fromJson(data));
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
@@ -47,7 +50,7 @@ public enum WidgetUserDefinedHandlers {
             function.onCallBack(null);
         } else {
             try {
-                WidgetView.getInstance().onSignUpHandler.handle(WidgetUser.fromJson(data));
+                RewardsModule.getInstance().onSignUpHandler.handle(User.fromJson(data));
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
@@ -58,7 +61,7 @@ public enum WidgetUserDefinedHandlers {
 
     private BridgeHandler handler;
 
-    WidgetUserDefinedHandlers(BridgeHandler handler) {
+    UserDefinedHandlers(BridgeHandler handler) {
         this.handler = handler;
     }
 
