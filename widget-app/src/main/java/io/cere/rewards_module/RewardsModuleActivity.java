@@ -37,8 +37,6 @@ public class RewardsModuleActivity extends AppCompatActivity {
     private final BroadcastReceiver closeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            detachBridgeView();
-            unregisterReceivers();
             finish();
             overridePendingTransition(R.anim.scale_up, R.anim.scale_down);
         }
@@ -127,6 +125,13 @@ public class RewardsModuleActivity extends AppCompatActivity {
         configureInitialSize();
 
         registerReceivers();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        detachBridgeView();
+        unregisterReceivers();
     }
 
     @Override
