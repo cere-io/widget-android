@@ -23,7 +23,7 @@ dependencies {
   ...your dependencies
 
   // add this
-  implementation 'io.cere.rewards_module:2.0.*'
+  implementation 'com.github.cere-io:widget-android:2.1.*'
 }
 ```
 
