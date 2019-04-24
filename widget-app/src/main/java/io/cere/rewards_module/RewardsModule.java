@@ -194,14 +194,14 @@ public class RewardsModule {
     }
 
     /**
-     * Sends email to {@code RewardsModule} field on SignUp/SignIn pages. For example, you know user email
+     * Sends username (email or phone number) to {@code RewardsModule} field on SignUp/SignIn pages. For example, you know user email
      * and don't want to let user enter his email again. So, you can do that for user by invoking this
      * method.
      * @param value The field value.
      * @return current instance of {@code RewardsModule}.
      */
-    public RewardsModule setEmail(String value) {
-        putOrProcessHandler(() -> callWidgetJavascript("sendToField", "'email', " + "'" + value + "'"));
+    public RewardsModule setUsername(String value) {
+        putOrProcessHandler(() -> callWidgetJavascript("setUsername", "'" + value + "'"));
         return this;
     }
 
