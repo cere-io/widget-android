@@ -577,6 +577,7 @@ public class RewardsModule {
 
     RewardsModule show() {
         Intent intent = new Intent(getContext(), RewardsModuleActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getContext().startActivity(intent);
         callWidgetJavascript("__showOnNative", null);
         return this;
