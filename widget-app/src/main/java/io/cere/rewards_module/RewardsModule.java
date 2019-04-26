@@ -236,33 +236,27 @@ public class RewardsModule {
      * Opens {@code RewardsModule} in on boarding mode .
      * @return current instance of {@code RewardsModule}.
      */
-    public RewardsModule showOnboarding() {
+    public void showOnboarding() {
         callWidgetJavascript("showOnboarding", null);
-        return this;
     }
 
     /**
      * Opens {@code RewardsModule} with given placement.
      * @param placement Placement configured in RMS.
-     * @return current instance of {@code RewardsModule}.
      */
-    public RewardsModule show(String placement) {
+    public void show(String placement) {
         callWidgetJavascript("show", "'" + placement + "'");
-        return this;
     }
 
     /**
      * Closes Widget.
-     * @return current instance of {@code RewardsModule}.
      */
-    public RewardsModule hide() {
+    public void hide() {
         if (onHideHandler != null) {
             onHideHandler.handle();
         }
 
         getContext().sendBroadcast(new Intent(close_widget_view.name()));
-
-        return this;
     }
 
     /**
@@ -306,6 +300,16 @@ public class RewardsModule {
     public RewardsModule setLeft(double leftInPercents) {
         this.leftPercentage = leftInPercents;
         setLeftPx((int) Math.round(Util.pxWidthFromPercents(getContext(), leftInPercents)));
+        return this;
+    }
+
+    /**
+     * Call this method in order to couple widget user with an external user.
+     * @param externalUserId External ID for a user.
+     * @return current instance of {@code RewardsModule}.
+     */
+    public RewardsModule identifyUser(String externalUserId) {
+        callWidgetJavascript("identifyUser", "'" + externalUserId + "'");
         return this;
     }
 
