@@ -199,12 +199,14 @@ public class RewardsModuleActivity extends AppCompatActivity {
     }
 
     private void attachBridgetView() {
-        root.addView(bridgeWebView);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
-        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        params.width = MATCH_PARENT;
-        params.height = MATCH_PARENT;
-        bridgeWebView.setLayoutParams(params);
+        if (bridgeWebView.getParent() == null) {
+            root.addView(bridgeWebView);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bridgeWebView.getLayoutParams();
+            params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            params.width = MATCH_PARENT;
+            params.height = MATCH_PARENT;
+            bridgeWebView.setLayoutParams(params);
+        }
     }
 
     private void detachBridgeView() {
